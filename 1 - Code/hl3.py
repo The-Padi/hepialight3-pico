@@ -107,3 +107,20 @@ class matrix:
         
         # Apply the array
         np.write()
+    
+    def set_led(column, line, color):
+        
+        # Check bounds
+        if line < 0 or line >= nb_line:
+            raise ValueError("Line is out of bound")
+        if column < 0 or column >= nb_row:
+            raise ValueError("Column is out of bound")
+        
+        # Convert the color
+        color = color_convert(color)
+        
+        # Set the specific LED to the color
+        np[line * nb_row + column] = color
+        
+        # Apply the array
+        np.write()
