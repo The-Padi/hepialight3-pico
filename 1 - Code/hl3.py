@@ -91,4 +91,19 @@ class matrix:
         
         # Apply the array
         np.write()
-
+    
+    def set_column(column, color):
+        
+        # Check column
+        if column < 0 or column >= nb_row:
+            raise ValueError("Column is out of bound")
+        
+        # Convert the color
+        color = color_convert(color)
+        
+        # Set the line to the color
+        for i in range(column, nb_row*nb_line, nb_row):
+            np[i] = color
+        
+        # Apply the array
+        np.write()

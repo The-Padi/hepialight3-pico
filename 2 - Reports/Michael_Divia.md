@@ -42,7 +42,7 @@ J'ai ensuite pris du temps afin de souder des pin à la matrice de LED afin de f
 
 ## Mardi, 18 Juin 2024
 
-J'ai commencé par créer `hl3.py` afin d'avoir un fichier librairie avec toutes les fonctions que nous allons implémentées. Je me suis ensuite attelé à la finalisation de la fonction `matrix`. J'ai aussi profité d'implémenter toute les couleurs que nous devions implémentées d'après la documentation.
+J'ai commencé par créer `hl3.py` afin d'avoir un fichier librairie avec toutes les fonctions que nous allons implémentées. Je me suis ensuite attelé à la finalisation de la fonction `matrix`. J'ai aussi profité d'implémenter toute les couleurs que nous devions implémentées d'après la documentation. J'ai ensuite enchaîné avec l'ajout de la fonction `set_line` et `set_column`. 
 
 # Creators
 
