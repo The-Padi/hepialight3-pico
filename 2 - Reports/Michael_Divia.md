@@ -42,7 +42,11 @@ J'ai ensuite pris du temps afin de souder des pin à la matrice de LED afin de f
 
 ## Mardi, 18 Juin 2024
 
-J'ai commencé par créer `hl3.py` afin d'avoir un fichier librairie avec toutes les fonctions que nous allons implémentées. Je me suis ensuite attelé à la finalisation de la fonction `matrix`. J'ai aussi profité d'implémenter toute les couleurs que nous devions implémentées d'après la documentation. J'ai ensuite enchaîné avec l'ajout de la fonction `set_line`,`set_column`, `set_led`, `get_led` puis, avec l'aide de Gaspard, nous avons implémenter la fonction `afficher_texte`. 
+J'ai commencé par créer `hl3.py` afin d'avoir un fichier librairie avec toutes les fonctions que nous allons implémentées. Je me suis ensuite attelé à la finalisation de la fonction `matrix`.
+
+J'ai aussi profité d'implémenter toute les couleurs que nous devions implémentées d'après la documentation. J'ai ensuite enchaîné avec l'ajout de la fonction `set_line`,`set_column`, `set_led`, `get_led` puis, avec l'aide de Gaspard, nous avons implémenter le début de la fonction `afficher_texte`.
+
+J'ai ensuite créer un fonction de démo `christmas` afin de démontré le bon fonctionnement des LEDs. Cette fonction est une ré-implémentation de la fonction de M. Gluck que vous pouvez trouver [ici](https://gitedu.hesge.ch/cores/projects/hepialight2/hepialight2-examples/-/blob/02261b68aad94dd52c6b35fdb83ed1d54028061b/peripherals/display/christmas_ball.py).
 
 # Creators
 

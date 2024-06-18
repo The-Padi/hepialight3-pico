@@ -2,7 +2,7 @@ from machine import Pin
 from neopixel import NeoPixel
 import utime
 
-nb_line = 16
+nb_line = 8
 nb_row = 8
 gpio_neopixel = 0
 
@@ -259,3 +259,104 @@ def afficher_texte(text, color, speed):
         for i in range(nb_row):
             printColumn(step + i, i, text)
         utime.sleep(speed)
+
+def christmas():
+    
+    color = 0x3
+    prime1=439
+    prime2=17005013
+
+    masque_blanc= 0x0f0f0f   # setup LEDs intensity
+    masque_rouge=0x0f0000
+    masque_bleu=0x00000f
+    
+    period = .01
+    
+    # Balles glissantes
+    for r in range(100):
+        color = (color * prime1) % prime2
+        # horizontale et verticale
+        if color&4 == 4:
+            for i in range(8):
+                temp = (4-int(abs(4.5-i))+1)
+                temp = max(3-2*int(temp/2),0)
+                for j in range(temp,8-temp):
+                    if (color&3 == 0):
+                        diagonal=min(int((i+j)),7)
+                    elif (color&3 == 1):
+                        matrix.set_led(i,j, color&masque_blanc)
+                    elif (color&3 == 2):
+                        matrix.set_led(7-i,j, color&masque_blanc)
+                    else:
+                        matrix.set_led(j,7-i, color&masque_blanc)
+                utime.sleep(period)
+
+        # Diagonale
+        else:
+            for k in range(2,9):
+                for i in range(k+1):
+                    if (4.5-(k-i))**2+(4.5-i)**2 < 5**2:
+                        if (color&3 == 0):
+                            matrix.set_led((k-i),(i), color&masque_blanc)
+                        elif (color&3 == 1):
+                            matrix.set_led((i),(k-i), color&masque_blanc)
+                        elif (color&3 == 2):
+                            matrix.set_led((7-(k-i)),(i), color&masque_blanc)
+                        else:
+                            matrix.set_led((i),7-(k-i), color&masque_blanc)
+                utime.sleep(period)
+
+    
+    # Clear the matrix
+    matrix.clear(0)
+    
+    # Couleurs clignote
+    period = .5
+    for r in range(20):
+        color = (color * prime1) % prime2
+        for i in range(8):
+            for j in range(8):
+                matrix.set_led(j,i,color*(i+1)*(j+11) & masque_blanc)
+        utime.sleep(period)
+        matrix.clear(0)
+        utime.sleep(period/10)
+    
+    # Bleu aléatoire
+    period = .05
+    for r in range(20):
+        color = (color * prime1) % prime2
+        for i in range(8):
+            for j in range(8):
+                matrix.set_led(j,i,color*(i+1)*(j+11) >> 4 & masque_bleu)
+        utime.sleep(period)
+
+    # Couleurs aleatoire
+    period = .05
+    for r in range(10):
+        color = (color * prime1) % prime2
+        for i in range(8):
+            for j in range(8):
+                matrix.set_led(j,i,color*(i+1)*(j+11) & masque_blanc)
+        utime.sleep(period)
+
+    # Rouge aléatoire
+    period = .05
+    for r in range(10):
+        color = (color * prime1) % prime2
+        for i in range(8):
+            for j in range(8):
+                matrix.set_led(j,i,color*(i+1)*(j+11) & masque_rouge)
+        utime.sleep(period)
+
+    # Lignes 
+    period = .05
+    for r in range(10):
+        color = (color * prime1) % prime2
+        for i in range(8):
+            matrix.set_led(color%8,i,color*(i+1)*(j+11) & masque_blanc)
+        utime.sleep(period)
+        matrix.clear(0)
+        for i in range(8):
+            matrix.set_led(i,color%8,color*(i+1)*(j+11) & masque_blanc)
+        utime.sleep(period)
+        matrix.clear(0)
