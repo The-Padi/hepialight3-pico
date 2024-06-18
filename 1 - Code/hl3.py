@@ -1,4 +1,4 @@
-from machine import Pin
+from machine import Pin, UART
 from neopixel import NeoPixel
 import utime
 
@@ -42,6 +42,12 @@ class color:
     ORANGE_DARK = (204, 102, 0)
     ORANGE = (255, 128, 0)
     ORANGE_YELLOW = (255, 204, 0)
+
+class direction:
+    NORTH = 1
+    SOUTH = 2
+    EAST = 4
+    WEST = 8
 
 # use https://goo.gl/gGYfJV to add new chars
 __TEXT_DICT = {
@@ -260,6 +266,36 @@ def afficher_texte(text, color, speed):
             printColumn(step + i, i, text)
         utime.sleep(speed)
 
+class uart:
+
+    channel = None
+
+    def __init__(self, dir, baudrate=9600, parity=None, bits=8, stop=1):
+
+        if (dir == direction.NORTH):
+            self.channel = UART(0, baudrate=baudrate, tx=Pin(12), rx=Pin(13), parity=parity, bits=bits, stop=stop)
+        
+        elif (dir == direction.SOUTH):
+            self.channel = UART(1, baudrate=baudrate, tx=Pin(8), rx=Pin(9), parity=parity, bits=bits, stop=stop)
+        
+        else:
+            raise ValueError("UART direction does not exist")
+    
+    def send(self, data):
+        self.channel.write(data)
+    
+    def sendline(self, data):
+        self.channel.write(data+'\n')
+    
+    def receive(self, nbyte=1):
+        return self.channel.read(nbyte)
+    
+    def receiveline(self):
+        data = None
+        while data == None:
+            data = self.channel.readline()
+        return data
+
 def christmas():
     
     color = 0x3
@@ -332,7 +368,7 @@ def christmas():
 
     # Couleurs aleatoire
     period = .05
-    for r in range(10):
+    for r in range(20):
         color = (color * prime1) % prime2
         for i in range(8):
             for j in range(8):
@@ -341,7 +377,7 @@ def christmas():
 
     # Rouge aléatoire
     period = .05
-    for r in range(10):
+    for r in range(20):
         color = (color * prime1) % prime2
         for i in range(8):
             for j in range(8):
@@ -350,7 +386,7 @@ def christmas():
 
     # Lignes 
     period = .05
-    for r in range(10):
+    for r in range(20):
         color = (color * prime1) % prime2
         for i in range(8):
             matrix.set_led(color%8,i,color*(i+1)*(j+11) & masque_blanc)
