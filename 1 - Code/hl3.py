@@ -1,10 +1,13 @@
 from machine import Pin
 from neopixel import NeoPixel
 
-np_led = 64
+nb_line = 8
+nb_row = 8
 gpio_neopixel = 0
 
-class Color:
+np = NeoPixel(Pin(gpio_neopixel, Pin.OUT), nb_line*nb_row)
+
+class color:
     BLACK = (0, 0, 0)
     BLUE = (0, 0, 255)
     CYAN = (0, 255, 255)
@@ -38,14 +41,27 @@ class Color:
     ORANGE_DARK = (204, 102, 0)
     ORANGE = (255, 128, 0)
     ORANGE_YELLOW = (255, 204, 0)
-
-
-def init_neopixel():
-    return NeoPixel(Pin(gpio_neopixel, Pin.OUT), np_led)
+    
+def col(r, g, b):
+    return (r, g, b)
 
 class matrix:
     def clear(color):
-        np = init_neopixel()
-        for i in range(np_led):
+        
+        # Handle hex an 0
+        if isinstance(color, int):
+            if color == 0:
+                color = (0, 0, 0)
+            else:
+                color = ((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF)
+        # Handle RGB tuple
+        elif isinstance(color, tuple) and len(color) == 3:
+            pass
+        # Error
+        else:
+            raise ValueError("Color must be an RGB tuple, a hex value, 0 or a valide color from the color class")
+        
+        for i in range(nb_line*nb_row):
             np[i] = color
+            
         np.write()
