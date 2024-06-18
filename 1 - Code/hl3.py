@@ -1,6 +1,9 @@
 from machine import Pin
 from neopixel import NeoPixel
 
+np_led = 64
+gpio_neopixel = 0
+
 class color:
     BLACK = (0, 0, 0)
     BLUE = (0, 0, 255)
@@ -10,11 +13,11 @@ class color:
     RED = (255, 0, 0)
 
 def init_neopixel():
-    return NeoPixel(Pin(0, Pin.OUT), 64)
+    return NeoPixel(Pin(gpio_neopixel, Pin.OUT), np_led)
 
 class matrix:
     def clear(color):
         np = init_neopixel()
-        for i in range(64):
+        for i in range(np_led):
             np[i] = color
         np.write()
