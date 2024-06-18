@@ -30,7 +30,7 @@ Ce projet consiste à concevoir une adaptation du projet HepiaLight 2 sur une no
 
 ## Upload du code
 
-Après avoir uploader le bon Firmware sur le Raspberry Pi, comme indiqué [ici](https://www.raspberrypi.com/documentation/microcontrollers/micropython.html), nous pouvons utiliser le logiciel [Thonny](https://thonny.org/) afin d'uploader notre code.
+Après avoir uploader le bon Firmware sur le Raspberry Pi, comme indiqué [ici](https://www.raspberrypi.com/documentation/microcontrollers/micropython.html), nous pouvons utiliser le logiciel [Thonny](https://thonny.org/) afin d'uploader notre code (en installant le module Pypi).
 
 # Travail
 
@@ -47,6 +47,8 @@ J'ai commencé par créer `hl3.py` afin d'avoir un fichier librairie avec toutes
 J'ai aussi profité d'implémenter toute les couleurs que nous devions implémentées d'après la documentation. J'ai ensuite enchaîné avec l'ajout de la fonction `set_line`,`set_column`, `set_led`, `get_led` puis, avec l'aide de Gaspard, nous avons implémenter le début de la fonction `afficher_texte`.
 
 J'ai ensuite créer un fonction de démo `christmas` afin de démontré le bon fonctionnement des LEDs. Cette fonction est une ré-implémentation de la fonction de M. Gluck que vous pouvez trouver [ici](https://gitedu.hesge.ch/cores/projects/hepialight2/hepialight2-examples/-/blob/02261b68aad94dd52c6b35fdb83ed1d54028061b/peripherals/display/christmas_ball.py).
+
+Suite à cela nous avons, à l'aide de M. Escribano, à implémenter les fonction `UART` suivante : `send`, `snedline`, `receive` et `receiveline` et nous avons commencé à les tester entre 2 cartes mais nous avons eux quelque problème, nous allons donc devoir continuer à investiguer cela demain.
 
 # Creators
 
