@@ -124,3 +124,19 @@ class matrix:
         
         # Apply the array
         np.write()
+        
+    def get_led(column, line):
+        
+        # Check bounds
+        if line < 0 or line >= nb_line:
+            raise ValueError("Line is out of bound")
+        if column < 0 or column >= nb_row:
+            raise ValueError("Column is out of bound")
+        
+        # Get the color of the specific LED
+        r, g, b = np[line * nb_row + column]
+        
+        # Convert to hexadecimal
+        hex_color = (r << 16) | (g << 8) | b
+        
+        return hex_color
