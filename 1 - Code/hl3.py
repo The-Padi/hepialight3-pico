@@ -45,23 +45,50 @@ class color:
 def col(r, g, b):
     return (r, g, b)
 
+def color_convert(color):
+    
+    # Handle hex an 0
+    if isinstance(color, int):
+        if color == 0:
+            color = (0, 0, 0)
+        else:
+            color = ((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF)
+    # Handle RGB tuple
+    elif isinstance(color, tuple) and len(color) == 3:
+        pass
+    # Error
+    else:
+        raise ValueError("Color must be an RGB tuple, a hex value, 0 or a valide color from the color class")
+    
+    return color
+
 class matrix:
+    
     def clear(color):
         
-        # Handle hex an 0
-        if isinstance(color, int):
-            if color == 0:
-                color = (0, 0, 0)
-            else:
-                color = ((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF)
-        # Handle RGB tuple
-        elif isinstance(color, tuple) and len(color) == 3:
-            pass
-        # Error
-        else:
-            raise ValueError("Color must be an RGB tuple, a hex value, 0 or a valide color from the color class")
+        # Convert the color
+        color = color_convert(color)
         
+        # Set the full screen to the color
         for i in range(nb_line*nb_row):
             np[i] = color
-            
+        
+        # Apply the array
         np.write()
+    
+    def set_line(line, color):
+        
+        # Check line
+        if line < 0 or line >= nb_line:
+            raise ValueError("Line is out of bound")
+        
+        # Convert the color
+        color = color_convert(color)
+        
+        # Set the line to the color
+        for i in range(line*nb_row, (line*nb_row)+nb_row):
+            np[i] = color
+        
+        # Apply the array
+        np.write()
+

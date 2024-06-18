@@ -1,4 +1,4 @@
-from hl3 import color
-from hl3 import matrix
+from hl3 import *
 
-matrix.clear(color.RED)
+matrix.clear(0)
+matrix.set_line(5, color.RED)
