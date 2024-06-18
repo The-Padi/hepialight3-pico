@@ -48,9 +48,7 @@ J'ai aussi profité d'implémenter toute les couleurs que nous devions implémen
 
 J'ai ensuite créer un fonction de démo `christmas` afin de démontré le bon fonctionnement des LEDs. Cette fonction est une ré-implémentation de la fonction de M. Gluck que vous pouvez trouver [ici](https://gitedu.hesge.ch/cores/projects/hepialight2/hepialight2-examples/-/blob/02261b68aad94dd52c6b35fdb83ed1d54028061b/peripherals/display/christmas_ball.py).
 
-Après consultation avec le groupe utilisant l'`ESP32`, nous avons convenu d'une convention de communication `UART` que nous avons appelé `L.H.C` pour `Laborde HepiaLight Convention` en l'honneur de M. Laborde, premier camarade à avoir fait fonctionné une communication `UART` en Python via `GPIO`. Les communication `UART` se feront donc toutes en `9600 8N1`.
-
-Suite à cette discussion nous avons commencé, à l'aide de M. Escribano, à implémenter les fonction `UART`.
+Suite à cela nous avons, à l'aide de M. Escribano, à implémenter les fonction `UART` suivante : `send`, `snedline`, `receive` et `receiveline` et nous avons commencé à les tester entre 2 cartes mais nous avons eux quelque problème, nous allons donc devoir continuer à investiguer cela demain.
 
 # Creators
 
