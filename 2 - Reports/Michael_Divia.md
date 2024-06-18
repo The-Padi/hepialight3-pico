@@ -9,6 +9,7 @@
   - [Upload du code](#upload-du-code)
 - [Travail](#travail)
   - [Lundi, 17 Juin 2024](#lundi-17-juin-2024)
+  - [Mardi, 18 Juin 2024](#mardi-18-juin-2024)
 - [Creators](#creators)
 - [Copyright and license](#copyright-and-license)
 
@@ -38,6 +39,10 @@ Après avoir uploader le bon Firmware sur le Raspberry Pi, comme indiqué [ici](
 Après avoir flasher le bon Firmware sur de Raspberry Pi, j'ai pu vérifier le bon fonctionnement en uploadant un code simple en suivant [cette documentation](https://docs.micropython.org/en/latest/rp2/quickref.html#neopixel-and-apa106-driver). J'ai pu donc constater que mon code fonctionnais ainsi que les connexions était correcte.
 
 J'ai ensuite pris du temps afin de souder des pin à la matrice de LED afin de facilité ça connexion à la Breadboard. J'ai ensuite commencé à concevoir la fonction `matrix`.
+
+## Mardi, 18 Juin 2024
+
+J'ai commencé par créer `hl3.py` afin d'avoir un fichier librairie avec toutes les fonctions que nous allons implémentées. Je me suis ensuite attelé à la finalisation de la fonction `matrix`.
 
 # Creators
 
