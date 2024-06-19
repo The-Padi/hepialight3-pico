@@ -8,7 +8,7 @@ gpio_neopixel = 0
 
 np = NeoPixel(Pin(gpio_neopixel, Pin.OUT), nb_line*nb_row)
 
-class color:
+class Color:
     BLACK = (0, 0, 0)
     BLUE = (0, 0, 255)
     CYAN = (0, 255, 255)
@@ -43,7 +43,7 @@ class color:
     ORANGE = (255, 128, 0)
     ORANGE_YELLOW = (255, 204, 0)
 
-class direction:
+class Direction:
     NORTH = 1
     SOUTH = 2
     EAST = 4
@@ -156,7 +156,7 @@ def color_convert(color):
     
     return color
 
-class matrix:
+class Matrix:
     
     def clear(color):
         
@@ -235,7 +235,7 @@ class matrix:
         
         return hex_color
 
-def afficher_texte(text, color, speed):
+def show_text(text, color, speed):
 
     # Clear the screen
     matrix.clear(0)
@@ -266,7 +266,7 @@ def afficher_texte(text, color, speed):
             printColumn(step + i, i, text)
         utime.sleep(speed)
 
-class uart:
+class Uart:
 
     channel = None
 
@@ -287,13 +287,20 @@ class uart:
     def sendline(self, data):
         self.channel.write(data+'\n')
     
-    def receive(self, nbyte=1):
-        return self.channel.read(nbyte)
+    def receive(self, length=1):
+        data = None
+        while data == None or not len(data) == length:
+            data = self.channel.read(length)
+            if data is None:
+                utime.sleep(0.1)
+        return data
     
     def receiveline(self):
         data = None
-        while data == None:
+        while data is None or not data.endswith(b'\n'):
             data = self.channel.readline()
+            if data is None:
+                utime.sleep(0.1)
         return data
 
 def christmas():
