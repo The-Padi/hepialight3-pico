@@ -49,13 +49,13 @@ J'ai aussi profité d'implémenter toute les couleurs que nous devions implémen
 
 J'ai ensuite créer un fonction de démo `christmas` afin de démontré le bon fonctionnement des LEDs. Cette fonction est une ré-implémentation de la fonction de M. Gluck que vous pouvez trouver [ici](https://gitedu.hesge.ch/cores/projects/hepialight2/hepialight2-examples/-/blob/02261b68aad94dd52c6b35fdb83ed1d54028061b/peripherals/display/christmas_ball.py).
 
-Suite à cela nous avons, à l'aide de M. Escribano, à implémenter les fonction `UART` suivante : `send`, `snedline`, `receive` et `receiveline` et nous avons commencé à les tester entre 2 cartes mais nous avons eux quelque problème, nous allons donc devoir continuer à investiguer cela demain.
+Suite à cela nous avons, avec l'aide de M. Escribano, à implémenter les fonction `UART` suivante : `send`, `snedline`, `receive` et `receiveline` et nous avons commencé à les tester entre 2 cartes mais nous avons eux quelque problème, nous allons donc devoir continuer à investiguer cela demain.
 
 ## Mercredi, 19 Juin 2024
 
-A l'aide de M. Escribano nous avons finalisé la correction des fonctions `receive` et `receiveline` afin de pouvoir communiqué en `UART` entre 2 cartes en utilisant les ports prévu à cet effet sur les RPI Pico (`NORTH` et `SOUTH` dans notre code).
+Avec l'aide de M. Escribano nous avons finalisé la correction des fonctions `receive` et `receiveline` afin de pouvoir communiqué en `UART` entre 2 cartes en utilisant les ports prévu à cet effet sur les RPI Pico (`NORTH` et `SOUTH` dans notre code).
 
-Nous avons ensuite enchaîner avec la communication `UART` via les `GPIO`.
+Nous avons ensuite enchaîné avec la communication `UART` via les `GPIO`, pour cela nous avons utilisé `rp2 PIO`. Nous avons donc adapté tout les fonctions crées précédemment afin de fonctionner avec ces derniers.
 
 # Creators
 
