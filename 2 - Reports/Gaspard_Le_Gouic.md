@@ -13,6 +13,7 @@
 - [Travail](#travail)
     - [Lundi, 17 Juin 2024](#lundi-17-juin-2024)
     - [Mardi, 18 Juin 2024](#mardi-18-juin-2024)
+    - [Mercredi, 19 Juin 2024](#mercredi-19-juin-2024)
 - [Creators](#creators)
 - [Copyright and license](#copyright-and-license)
 
@@ -48,6 +49,14 @@ Après avoir uploader le bon Firmware sur le Raspberry Pi, comme indiqué [ici](
 - Upload du firmware sur la Raspberry Pi.
 - Aide à Michael pour l’implémentation du texte en mouvement
 - Tentative d’implémentation d'une lecture d'un capteur de température par I2C comme "proof of concept" pour l'ajout d'un accéléromètre -> Réussi à détecter le capteur mais pas à le lire.
+
+## Mercredi, 19 Juin 2024
+
+- Résolution des problèmes d I2C.
+- Récupération et traitement des données d'un capteur de température.
+- Récupération et traitement des données de l'accéléromètre de la MyLab2.
+- Documentation sur le fonctionnement du SPI.
+- Exploration de possibilités pour des implémentations futurs.
 
 # Creators
 
