@@ -1,4 +1,4 @@
-from machine import Pin, UART
+from machine import Pin, Uart
 from neopixel import NeoPixel
 import utime
 
@@ -139,70 +139,70 @@ __TEXT_DICT = {
 def col(r, g, b):
     return (r, g, b)
 
-def color_convert(color):
+def Color_convert(Color):
     
     # Handle hex an 0
-    if isinstance(color, int):
-        if color == 0:
-            color = (0, 0, 0)
+    if isinstance(Color, int):
+        if Color == 0:
+            Color = (0, 0, 0)
         else:
-            color = ((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF)
+            Color = ((Color >> 16) & 0xFF, (Color >> 8) & 0xFF, Color & 0xFF)
     # Handle RGB tuple
-    elif isinstance(color, tuple) and len(color) == 3:
+    elif isinstance(Color, tuple) and len(Color) == 3:
         pass
     # Error
     else:
-        raise ValueError("Color must be an RGB tuple, a hex value, 0 or a valide color from the color class")
+        raise ValueError("Color must be an RGB tuple, a hex value, 0 or a valide Color from the Color class")
     
-    return color
+    return Color
 
 class Matrix:
     
-    def clear(color):
+    def clear(Color):
         
-        # Convert the color
-        color = color_convert(color)
+        # Convert the Color
+        Color = Color_convert(Color)
         
-        # Set the full screen to the color
+        # Set the full screen to the Color
         for i in range(nb_line*nb_row):
-            np[i] = color
+            np[i] = Color
         
         # Apply the array
         np.write()
     
-    def set_line(line, color):
+    def set_line(line, Color):
         
         # Check line
         if line < 0 or line >= nb_line:
             raise ValueError("Line is out of bound")
         
-        # Convert the color
-        color = color_convert(color)
+        # Convert the Color
+        Color = Color_convert(Color)
         
-        # Set the line to the color
+        # Set the line to the Color
         for i in range(line*nb_row, (line*nb_row)+nb_row):
-            np[i] = color
+            np[i] = Color
         
         # Apply the array
         np.write()
     
-    def set_column(column, color):
+    def set_column(column, Color):
         
         # Check column
         if column < 0 or column >= nb_row:
             raise ValueError("Column is out of bound")
         
-        # Convert the color
-        color = color_convert(color)
+        # Convert the Color
+        Color = Color_convert(Color)
         
-        # Set the line to the color
+        # Set the line to the Color
         for i in range(column, nb_row*nb_line, nb_row):
-            np[i] = color
+            np[i] = Color
         
         # Apply the array
         np.write()
     
-    def set_led(column, line, color):
+    def set_led(column, line, Color):
         
         # Check bounds
         if line < 0 or line >= nb_line:
@@ -210,11 +210,11 @@ class Matrix:
         if column < 0 or column >= nb_row:
             raise ValueError("Column is out of bound")
         
-        # Convert the color
-        color = color_convert(color)
+        # Convert the Color
+        Color = Color_convert(Color)
         
-        # Set the specific LED to the color
-        np[line * nb_row + column] = color
+        # Set the specific LED to the Color
+        np[line * nb_row + column] = Color
         
         # Apply the array
         np.write()
@@ -227,18 +227,18 @@ class Matrix:
         if column < 0 or column >= nb_row:
             raise ValueError("Column is out of bound")
         
-        # Get the color of the specific LED
+        # Get the Color of the specific LED
         r, g, b = np[line * nb_row + column]
         
         # Convert to hexadecimal
-        hex_color = (r << 16) | (g << 8) | b
+        hex_Color = (r << 16) | (g << 8) | b
         
-        return hex_color
+        return hex_Color
 
-def show_text(text, color, speed):
+def show_text(text, Color, speed):
 
     # Clear the screen
-    matrix.clear(0)
+    Matrix.clear(0)
 
     width = 5
     height = 8
@@ -258,8 +258,8 @@ def show_text(text, color, speed):
         colbit = 1 << col
         charMap = __TEXT_DICT[char]
         for line in range(height):
-            colored = len(charMap) > line and charMap[line] & colbit
-            matrix.set_led(xpos, line, color if colored else 0)
+            Colored = len(charMap) > line and charMap[line] & colbit
+            Matrix.set_led(xpos, line, Color if Colored else 0)
 
     for step in range(h_offset + len(text) * (width + spacewidth) + 1):
         for i in range(nb_row):
@@ -269,43 +269,62 @@ def show_text(text, color, speed):
 class Uart:
 
     channel = None
+    direction = None
 
     def __init__(self, dir, baudrate=9600, parity=None, bits=8, stop=1):
 
-        if (dir == direction.NORTH):
-            self.channel = UART(0, baudrate=baudrate, tx=Pin(12), rx=Pin(13), parity=parity, bits=bits, stop=stop)
+        if (dir == Direction.NORTH):
+            self.channel = Uart(0, baudrate=baudrate, tx=Pin(12), rx=Pin(13), parity=parity, bits=bits, stop=stop)
         
-        elif (dir == direction.SOUTH):
-            self.channel = UART(1, baudrate=baudrate, tx=Pin(8), rx=Pin(9), parity=parity, bits=bits, stop=stop)
+        elif (dir == Direction.SOUTH):
+            self.channel = Uart(1, baudrate=baudrate, tx=Pin(8), rx=Pin(9), parity=parity, bits=bits, stop=stop)
         
         else:
-            raise ValueError("UART direction does not exist")
+            raise ValueError("Uart direction does not exist")
+        
+        self.direction = dir
     
     def send(self, data):
-        self.channel.write(data)
+        if self.direction == Direction.NORTH or self.direction == Direction.SOUTH:
+            self.channel.write(data)
+        else:
+            i = 0
     
     def sendline(self, data):
-        self.channel.write(data+'\n')
+        if self.direction == Direction.NORTH or self.direction == Direction.SOUTH:
+            self.channel.write(data+'\n')
+        else:
+            i = 0
     
     def receive(self, length=1):
         data = None
-        while data == None or not len(data) == length:
-            data = self.channel.read(length)
-            if data is None:
-                utime.sleep(0.1)
+        
+        if self.direction == Direction.NORTH or self.direction == Direction.SOUTH:
+            while data == None or not len(data) == length:
+                data = self.channel.read(length)
+                if data is None:
+                    utime.sleep(0.1)
+        else:
+            i = 0
+            
         return data
     
     def receiveline(self):
         data = None
-        while data is None or not data.endswith(b'\n'):
-            data = self.channel.readline()
-            if data is None:
-                utime.sleep(0.1)
+        
+        if self.direction == Direction.NORTH or self.direction == Direction.SOUTH:
+            while data is None or not data.endswith(b'\n'):
+                data = self.channel.readline()
+                if data is None:
+                    utime.sleep(0.1)
+        else:
+            i = 0
+            
         return data
 
 def christmas():
     
-    color = 0x3
+    Color = 0x3
     prime1=439
     prime2=17005013
 
@@ -317,21 +336,21 @@ def christmas():
     
     # Balles glissantes
     for r in range(100):
-        color = (color * prime1) % prime2
+        Color = (Color * prime1) % prime2
         # horizontale et verticale
-        if color&4 == 4:
+        if Color&4 == 4:
             for i in range(8):
                 temp = (4-int(abs(4.5-i))+1)
                 temp = max(3-2*int(temp/2),0)
                 for j in range(temp,8-temp):
-                    if (color&3 == 0):
+                    if (Color&3 == 0):
                         diagonal=min(int((i+j)),7)
-                    elif (color&3 == 1):
-                        matrix.set_led(i,j, color&masque_blanc)
-                    elif (color&3 == 2):
-                        matrix.set_led(7-i,j, color&masque_blanc)
+                    elif (Color&3 == 1):
+                        Matrix.set_led(i,j, Color&masque_blanc)
+                    elif (Color&3 == 2):
+                        Matrix.set_led(7-i,j, Color&masque_blanc)
                     else:
-                        matrix.set_led(j,7-i, color&masque_blanc)
+                        Matrix.set_led(j,7-i, Color&masque_blanc)
                 utime.sleep(period)
 
         # Diagonale
@@ -339,67 +358,67 @@ def christmas():
             for k in range(2,9):
                 for i in range(k+1):
                     if (4.5-(k-i))**2+(4.5-i)**2 < 5**2:
-                        if (color&3 == 0):
-                            matrix.set_led((k-i),(i), color&masque_blanc)
-                        elif (color&3 == 1):
-                            matrix.set_led((i),(k-i), color&masque_blanc)
-                        elif (color&3 == 2):
-                            matrix.set_led((7-(k-i)),(i), color&masque_blanc)
+                        if (Color&3 == 0):
+                            Matrix.set_led((k-i),(i), Color&masque_blanc)
+                        elif (Color&3 == 1):
+                            Matrix.set_led((i),(k-i), Color&masque_blanc)
+                        elif (Color&3 == 2):
+                            Matrix.set_led((7-(k-i)),(i), Color&masque_blanc)
                         else:
-                            matrix.set_led((i),7-(k-i), color&masque_blanc)
+                            Matrix.set_led((i),7-(k-i), Color&masque_blanc)
                 utime.sleep(period)
 
     
-    # Clear the matrix
-    matrix.clear(0)
+    # Clear the Matrix
+    Matrix.clear(0)
     
     # Couleurs clignote
     period = .5
     for r in range(20):
-        color = (color * prime1) % prime2
+        Color = (Color * prime1) % prime2
         for i in range(8):
             for j in range(8):
-                matrix.set_led(j,i,color*(i+1)*(j+11) & masque_blanc)
+                Matrix.set_led(j,i,Color*(i+1)*(j+11) & masque_blanc)
         utime.sleep(period)
-        matrix.clear(0)
+        Matrix.clear(0)
         utime.sleep(period/10)
     
     # Bleu aléatoire
     period = .05
     for r in range(20):
-        color = (color * prime1) % prime2
+        Color = (Color * prime1) % prime2
         for i in range(8):
             for j in range(8):
-                matrix.set_led(j,i,color*(i+1)*(j+11) >> 4 & masque_bleu)
+                Matrix.set_led(j,i,Color*(i+1)*(j+11) >> 4 & masque_bleu)
         utime.sleep(period)
 
     # Couleurs aleatoire
     period = .05
     for r in range(20):
-        color = (color * prime1) % prime2
+        Color = (Color * prime1) % prime2
         for i in range(8):
             for j in range(8):
-                matrix.set_led(j,i,color*(i+1)*(j+11) & masque_blanc)
+                Matrix.set_led(j,i,Color*(i+1)*(j+11) & masque_blanc)
         utime.sleep(period)
 
     # Rouge aléatoire
     period = .05
     for r in range(20):
-        color = (color * prime1) % prime2
+        Color = (Color * prime1) % prime2
         for i in range(8):
             for j in range(8):
-                matrix.set_led(j,i,color*(i+1)*(j+11) & masque_rouge)
+                Matrix.set_led(j,i,Color*(i+1)*(j+11) & masque_rouge)
         utime.sleep(period)
 
     # Lignes 
     period = .05
     for r in range(20):
-        color = (color * prime1) % prime2
+        Color = (Color * prime1) % prime2
         for i in range(8):
-            matrix.set_led(color%8,i,color*(i+1)*(j+11) & masque_blanc)
+            Matrix.set_led(Color%8,i,Color*(i+1)*(j+11) & masque_blanc)
         utime.sleep(period)
-        matrix.clear(0)
+        Matrix.clear(0)
         for i in range(8):
-            matrix.set_led(i,color%8,color*(i+1)*(j+11) & masque_blanc)
+            Matrix.set_led(i,Color%8,Color*(i+1)*(j+11) & masque_blanc)
         utime.sleep(period)
-        matrix.clear(0)
+        Matrix.clear(0)
