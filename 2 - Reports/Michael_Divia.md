@@ -57,6 +57,10 @@ Avec l'aide de M. Escribano nous avons finalisé la correction des fonctions `re
 
 Nous avons ensuite enchaîné avec la communication `UART` via les `GPIO`, pour cela nous avons utilisé `rp2 PIO`. Nous avons donc adapté tout les fonctions crées précédemment afin de fonctionner avec ces derniers.
 
+## Jeudi 20 Juin 2024
+
+Design et impression d'une boîte.
+
 # Creators
 
 **Michael Divià**
