@@ -61,6 +61,10 @@ Nous avons ensuite enchaîné avec la communication `UART` via les `GPIO`, pour 
 
 Design et impression d'une boîte.
 
+## Vendredi 21 Juin 2024
+
+J'ai modifié la fonction d'affichage et de scrolling du texte afin d'utiliser un `FrameBuffer`. Cela accélère considérablement la vitesse de scolling.
+
 # Creators
 
 **Michael Divià**

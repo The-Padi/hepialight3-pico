@@ -2,6 +2,7 @@ from machine import Pin, UART
 from neopixel import NeoPixel
 from rp2 import PIO, StateMachine, asm_pio
 import utime
+import framebuf
 
 nb_line = 8
 nb_row = 8
@@ -236,35 +237,30 @@ class Matrix:
         
         return hex_Color
 
-def show_text(text, Color, speed):
+def rgb_to_rgb565(r, g, b):
+    return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3)
 
-    # Clear the screen
-    Matrix.clear(0)
+def rgb565_to_rgb(color):
+    r = (color >> 8) & 0xF8
+    g = (color >> 3) & 0xFC
+    b = (color << 3) & 0xF8
+    return (r, g, b)
 
-    width = 5
-    height = 8
-    h_offset = 8
-    spacewidth = 2
+def framebuffer_to_neopixel(fb):
+    for y in range(nb_line):
+        for x in range(nb_row):
+            color = fb.pixel(x, y)
+            np[y * nb_row + x] = rgb565_to_rgb(color)
+    np.write()
 
-    def printColumn(step, xpos, text):
-        if step < h_offset or step >= h_offset + len(text) * (width + spacewidth):
-            char = ' '
-            col = 0
-        else:
-            step -= h_offset
-            char = text[step // (width + spacewidth)]
-            col = step % (width + spacewidth)
-            if char not in __TEXT_DICT:
-                char = ' '
-        colbit = 1 << col
-        charMap = __TEXT_DICT[char]
-        for line in range(height):
-            Colored = len(charMap) > line and charMap[line] & colbit
-            Matrix.set_led(xpos, line, Color if Colored else 0)
-
-    for step in range(h_offset + len(text) * (width + spacewidth) + 1):
-        for i in range(nb_row):
-            printColumn(step + i, i, text)
+def show_text(text, color, speed=0.1):
+    color_rgb565 = rgb_to_rgb565(*color)
+    fb = framebuf.FrameBuffer(bytearray(nb_line * nb_row * 2), nb_row, nb_line, framebuf.RGB565)
+    
+    for offset in range(len(text) * 8):
+        fb.fill(0)
+        fb.text(text, -offset, 0, color_rgb565)
+        framebuffer_to_neopixel(fb)
         utime.sleep(speed)
 
 class Uart:
@@ -390,47 +386,23 @@ def christmas():
     Color = 0x3
     prime1=439
     prime2=17005013
-
-    masque_blanc= 0x0f0f0f   # setup LEDs intensity
-    masque_rouge=0x0f0000
-    masque_bleu=0x00000f
     
     period = .01
     
     # Balles glissantes
     for r in range(100):
+        temp = [[2,5],[1,6],[0,7],[0,7],[0,7],[0,7],[1,6],[2,5]]
         Color = (Color * prime1) % prime2
-        # horizontale et verticale
-        if Color&4 == 4:
-            for i in range(8):
-                temp = (4-int(abs(4.5-i))+1)
-                temp = max(3-2*int(temp/2),0)
-                for j in range(temp,8-temp):
-                    if (Color&3 == 0):
-                        diagonal=min(int((i+j)),7)
-                    elif (Color&3 == 1):
-                        Matrix.set_led(i,j, Color&masque_blanc)
-                    elif (Color&3 == 2):
-                        Matrix.set_led(7-i,j, Color&masque_blanc)
-                    else:
-                        Matrix.set_led(j,7-i, Color&masque_blanc)
-                utime.sleep(period)
-
-        # Diagonale
-        else:
-            for k in range(2,9):
-                for i in range(k+1):
-                    if (4.5-(k-i))**2+(4.5-i)**2 < 5**2:
-                        if (Color&3 == 0):
-                            Matrix.set_led((k-i),(i), Color&masque_blanc)
-                        elif (Color&3 == 1):
-                            Matrix.set_led((i),(k-i), Color&masque_blanc)
-                        elif (Color&3 == 2):
-                            Matrix.set_led((7-(k-i)),(i), Color&masque_blanc)
-                        else:
-                            Matrix.set_led((i),7-(k-i), Color&masque_blanc)
-                utime.sleep(period)
-
+        # Horizontale et Verticale
+        for i in range(8):
+            for j in range(temp[i][0],temp[i][-1]+1):
+                if (Color&3 == 1):
+                    Matrix.set_led(i,j, Color)
+                elif (Color&3 == 2):
+                    Matrix.set_led(7-i,j, Color)
+                else:
+                    Matrix.set_led(j,7-i, Color)
+            utime.sleep(period)
     
     # Clear the Matrix
     Matrix.clear(0)
@@ -441,7 +413,7 @@ def christmas():
         Color = (Color * prime1) % prime2
         for i in range(8):
             for j in range(8):
-                Matrix.set_led(j,i,Color*(i+1)*(j+11) & masque_blanc)
+                Matrix.set_led(j,i,Color*(i+1)*(j+11))
         utime.sleep(period)
         Matrix.clear(0)
         utime.sleep(period/10)
@@ -452,7 +424,7 @@ def christmas():
         Color = (Color * prime1) % prime2
         for i in range(8):
             for j in range(8):
-                Matrix.set_led(j,i,Color*(i+1)*(j+11) >> 4 & masque_bleu)
+                Matrix.set_led(j,i,Color*(i+1)*(j+11) >> 4)
         utime.sleep(period)
 
     # Couleurs aleatoire
@@ -461,7 +433,7 @@ def christmas():
         Color = (Color * prime1) % prime2
         for i in range(8):
             for j in range(8):
-                Matrix.set_led(j,i,Color*(i+1)*(j+11) & masque_blanc)
+                Matrix.set_led(j,i,Color*(i+1)*(j+11))
         utime.sleep(period)
 
     # Rouge aléatoire
@@ -470,7 +442,7 @@ def christmas():
         Color = (Color * prime1) % prime2
         for i in range(8):
             for j in range(8):
-                Matrix.set_led(j,i,Color*(i+1)*(j+11) & masque_rouge)
+                Matrix.set_led(j,i,Color*(i+1)*(j+11))
         utime.sleep(period)
 
     # Lignes 
@@ -478,10 +450,10 @@ def christmas():
     for r in range(20):
         Color = (Color * prime1) % prime2
         for i in range(8):
-            Matrix.set_led(Color%8,i,Color*(i+1)*(j+11) & masque_blanc)
+            Matrix.set_led(Color%8,i,Color*(i+1)*(j+11))
         utime.sleep(period)
         Matrix.clear(0)
         for i in range(8):
-            Matrix.set_led(i,Color%8,Color*(i+1)*(j+11) & masque_blanc)
+            Matrix.set_led(i,Color%8,Color*(i+1)*(j+11))
         utime.sleep(period)
         Matrix.clear(0)
