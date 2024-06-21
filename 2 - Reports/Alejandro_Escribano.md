@@ -45,7 +45,11 @@
 We made a first attempt using MicroPython and the libraries made available by it, but the results were more than inadequate. The ``UART`` timings didn't seem to be correct even though they were configured correctly and the messages arrived successfully very rarely. Using the **AnalogDiscovery 2** we determined that the current system did not appear to be fast enough to meet the ``UART`` timings standard.  
 After this failed attempt and after having talked to some of the assistants, we decided to make a second attempt, but this time using the ``PIO`` library available for the RBPi Pico. This implements, among other things, **lower level assembly functions** to interact with the I/O of the system. After studying some of the examples found on the internet and adjusting some of the parameters, we were able to get the two extra ``UART`` interfaces to work. The advantage and speed of using this method proved to be **clearly superior** to anything we had used before.
 
+- Discussed with **M. Perez** and **M. Le Gouic** the possibility of adding **wireless communications** to the project either using an ESP32 or replacing the current RBPi Pico by a RBPi Pico W. It still is only a possibility under discussion, because we don't know yet the viability and complexity of it.
+
 ### 20 June 2024 ###
+
+- Had to present another project during the morning. As a consequence I didn't touch this one during the morning.
 
 - I had to work the whole day on another project in order to be able to present it at the end of the week.
 
