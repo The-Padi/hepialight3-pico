@@ -3,12 +3,14 @@ from neopixel import NeoPixel
 from rp2 import PIO, StateMachine, asm_pio
 import utime
 import framebuf
+import gc
 
 nb_line = 8
 nb_row = 8
 gpio_neopixel = 0
 
 np = NeoPixel(Pin(gpio_neopixel, Pin.OUT), nb_line*nb_row)
+fb = framebuf.FrameBuffer(bytearray(nb_line * nb_row * 2), nb_row, nb_line, framebuf.RGB565)
 
 class Color:
     BLACK = (0, 0, 0)
@@ -45,98 +47,22 @@ class Color:
     ORANGE = (255, 128, 0)
     ORANGE_YELLOW = (255, 204, 0)
 
+COLOR_MAP = {
+    'R': Color.RED,
+    'G': Color.GREEN,
+    'B': Color.BLUE,
+    'C': Color.CYAN,
+    'M': Color.MAGENTA,
+    'Y': Color.YELLOW,
+    'W': Color.WHITE,
+    '.': Color.BLACK
+}
+
 class Direction:
     NORTH = 1
     SOUTH = 2
     EAST = 4
     WEST = 8
-
-# use https://goo.gl/gGYfJV to add new chars
-__TEXT_DICT = {
-    ' ': [],
-    'A': [14, 17, 17, 31, 17, 17, 17],
-    'B': [15, 17, 17, 31, 17, 17, 15],
-    'C': [14, 17, 1, 1, 1, 17, 14],
-    'D': [15, 17, 17, 17, 17, 17, 15],
-    'E': [31, 1, 1, 15, 1, 1, 31],
-    'F': [31, 1, 1, 15, 1, 1, 1],
-    'G': [14, 17, 1, 1, 25, 17, 30],
-    'H': [17, 17, 17, 31, 17, 17, 17],
-    'I': [31, 4, 4, 4, 4, 4, 31],
-    'J': [31, 16, 16, 16, 16, 17, 14],
-    'K': [17, 17, 9, 7, 9, 17, 17],
-    'L': [1, 1, 1, 1, 1, 1, 31],
-    'M': [17, 27, 27, 21, 21, 17, 17],
-    'N': [17, 19, 21, 21, 25, 17, 17],
-    'O': [14, 17, 17, 17, 17, 17, 14],
-    'P': [15, 17, 17, 17, 15, 1, 1],
-    'Q': [14, 17, 17, 17, 17, 21, 14, 4, 8],
-    'R': [15, 17, 17, 15, 9, 17, 17],
-    'S': [30, 1, 1, 14, 16, 16, 15],
-    'T': [31, 4, 4, 4, 4, 4, 4],
-    'U': [17, 17, 17, 17, 17, 17, 14],
-    'V': [17, 17, 17, 17, 10, 10, 4],
-    'W': [17, 17, 21, 21, 21, 10, 10],
-    'X': [17, 17, 10, 4, 10, 17, 17],
-    'Y': [17, 10, 4, 4, 4, 4, 4],
-    'Z': [31, 16, 8, 4, 2, 1, 31],
-    'a': [0, 0, 14, 16, 30, 17, 30],
-    'b': [1, 1, 13, 19, 17, 17, 15],
-    'c': [0, 0, 14, 17, 1, 17, 14],
-    'd': [16, 16, 30, 17, 17, 17, 14],
-    'e': [0, 0, 14, 17, 31, 1, 30],
-    'f': [24, 4, 30, 4, 4, 4, 31],
-    'g': [0, 0, 30, 17, 17, 25, 22, 16, 14],
-    'h': [1, 1, 15, 17, 17, 17, 17],
-    'i': [4, 0, 7, 4, 4, 4, 31],
-    'j': [16, 0, 28, 16, 16, 16, 16, 17, 14],
-    'k': [1, 1, 9, 9, 7, 9, 17],
-    'l': [7, 4, 4, 4, 4, 4, 31],
-    'm': [0, 0, 21, 31, 21, 21, 21],
-    'n': [0, 0, 13, 19, 17, 17, 17],
-    'o': [0, 0, 14, 17, 17, 17, 14],
-    'p': [0, 0, 13, 19, 17, 17, 15, 1, 1],
-    'q': [0, 0, 30, 17, 17, 25, 22, 16, 16],
-    'r': [0, 0, 27, 6, 2, 2, 15],
-    's': [0, 0, 30, 1, 14, 16, 15],
-    't': [0, 4, 31, 4, 4, 4, 24],
-    'u': [0, 0, 17, 17, 17, 25, 22],
-    'v': [0, 0, 17, 17, 10, 10, 4],
-    'w': [0, 0, 17, 21, 21, 10, 10],
-    'x': [0, 0, 17, 17, 14, 17, 17],
-    'y': [0, 0, 17, 17, 10, 10, 4, 4, 3],
-    'z': [0, 0, 31, 8, 4, 2, 31],
-    '0': [14, 25, 21, 21, 21, 19, 14],
-    '1': [4, 7, 4, 4, 4, 4, 31],
-    '2': [14, 17, 16, 14, 1, 1, 31],
-    '3': [14, 17, 16, 14, 16, 17, 14],
-    '4': [8, 12, 10, 9, 31, 8, 8],
-    '5': [31, 1, 1, 15, 16, 16, 15],
-    '6': [12, 2, 1, 15, 17, 17, 14],
-    '7': [31, 16, 8, 4, 2, 2, 2],
-    '8': [14, 17, 17, 14, 17, 17, 14],
-    '9': [14, 17, 17, 30, 16, 8, 6],
-    '.': [0, 0, 0, 0, 0, 4, 4],
-    ',': [0, 0, 0, 0, 0, 4, 4, 2],
-    ';': [0, 0, 4, 4, 0, 4, 4, 2],
-    '?': [14, 17, 16, 12, 0, 4, 4],
-    '!': [4, 4, 4, 4, 0, 4, 4],
-    '-': [0, 0, 0, 0, 14],
-    '_': [0, 0, 0, 0, 0, 0, 31],
-    '*': [0, 0, 10, 4, 10],
-    '+': [0, 0, 4, 4, 31, 4, 4],
-    '/': [16, 16, 8, 4, 4, 2, 2],
-    '\\': [2, 2, 4, 8, 8, 16, 16],
-    '<': [0, 0, 8, 4, 2, 4, 8],
-    '>': [0, 0, 2, 4, 8, 4, 2],
-    '#': [10, 10, 31, 10, 31, 10, 10],
-    '=': [0, 0, 0, 31, 0, 31],
-    '\'': [8, 8, 4],
-    '%': [11, 11, 4, 2, 2, 13, 13, 0, 0],
-    '&': [6, 1, 1, 6, 5, 9, 22, 0, 0],
-    '@': [14, 17, 29, 27, 31, 1, 30, 0, 0],
-    '$': [4, 30, 5, 14, 20, 15, 4, 0, 0],
-}
     
 def col(r, g, b):
     return (r, g, b)
@@ -237,6 +163,23 @@ class Matrix:
         
         return hex_Color
 
+def set_img(img):
+    
+    if not img:
+        raise ValueError("Image cannot be empty")
+    
+    arr = [COLOR_MAP[c] for c in img if c in COLOR_MAP]
+    
+    if len(arr) < nb_line * nb_row:
+        raise ValueError(f"Image too small for screen ({len(arr)} pixels for a {nb_line}x{nb_row} screen)")
+    elif len(arr) > nb_line * nb_row:
+        raise ValueError(f"Image too large for screen ({len(arr)} pixels for a {nb_line}x{nb_row} screen)")
+    
+    for y in range(nb_line):
+        for x in range(nb_row):
+            Matrix.set_led(x, y, arr[y * nb_row + x])
+            
+
 def rgb_to_rgb565(r, g, b):
     return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3)
 
@@ -255,12 +198,12 @@ def framebuffer_to_neopixel(fb):
 
 def show_text(text, color, speed=0.1):
     color_rgb565 = rgb_to_rgb565(*color)
-    fb = framebuf.FrameBuffer(bytearray(nb_line * nb_row * 2), nb_row, nb_line, framebuf.RGB565)
     
-    for offset in range(len(text) * 8):
+    for offset in range(nb_row + (len(text) * 8)):
         fb.fill(0)
-        fb.text(text, -offset, 0, color_rgb565)
+        fb.text(text, nb_row-offset, 0, color_rgb565)
         framebuffer_to_neopixel(fb)
+        gc.collect()
         utime.sleep(speed)
 
 class Uart:
@@ -390,7 +333,7 @@ def christmas():
     period = .01
     
     # Balles glissantes
-    for r in range(100):
+    for r in range(20):
         temp = [[2,5],[1,6],[0,7],[0,7],[0,7],[0,7],[1,6],[2,5]]
         Color = (Color * prime1) % prime2
         # Horizontale et Verticale
@@ -409,7 +352,7 @@ def christmas():
     
     # Couleurs clignote
     period = .5
-    for r in range(20):
+    for r in range(10):
         Color = (Color * prime1) % prime2
         for i in range(8):
             for j in range(8):
@@ -420,7 +363,7 @@ def christmas():
     
     # Bleu aléatoire
     period = .05
-    for r in range(20):
+    for r in range(10):
         Color = (Color * prime1) % prime2
         for i in range(8):
             for j in range(8):
@@ -429,7 +372,7 @@ def christmas():
 
     # Couleurs aleatoire
     period = .05
-    for r in range(20):
+    for r in range(10):
         Color = (Color * prime1) % prime2
         for i in range(8):
             for j in range(8):
@@ -438,7 +381,7 @@ def christmas():
 
     # Rouge aléatoire
     period = .05
-    for r in range(20):
+    for r in range(10):
         Color = (Color * prime1) % prime2
         for i in range(8):
             for j in range(8):
@@ -447,7 +390,7 @@ def christmas():
 
     # Lignes 
     period = .05
-    for r in range(20):
+    for r in range(10):
         Color = (Color * prime1) % prime2
         for i in range(8):
             Matrix.set_led(Color%8,i,Color*(i+1)*(j+11))

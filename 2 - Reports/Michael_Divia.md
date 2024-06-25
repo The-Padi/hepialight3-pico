@@ -11,6 +11,9 @@
   - [Lundi, 17 Juin 2024](#lundi-17-juin-2024)
   - [Mardi, 18 Juin 2024](#mardi-18-juin-2024)
   - [Mercredi, 19 Juin 2024](#mercredi-19-juin-2024)
+  - [Jeudi 20 Juin 2024](#jeudi-20-juin-2024)
+  - [Vendredi 21 Juin 2024](#vendredi-21-juin-2024)
+  - [Mardi 25 Juin 2024](#mardi-25-juin-2024)
 - [Creators](#creators)
 - [Copyright and license](#copyright-and-license)
 
@@ -64,6 +67,12 @@ Design et impression d'une boîte.
 ## Vendredi 21 Juin 2024
 
 J'ai modifié la fonction d'affichage et de scrolling du texte afin d'utiliser un `FrameBuffer`. Cela accélère considérablement la vitesse de scolling.
+
+## Mardi 25 Juin 2024
+
+J'ai fini d'optimiser la fonction d'affichage et de scrolling du text. Le texte commence maintenant en dehors de l'écran et nous n'avons plus de problème de ralentissement a chaque fois que nous voulons afficher du texte. Ce problème était dû à un problème d'allocation mémoire et de garbage collection du `FrameBuffer`.
+
+J'ai ensuite enchaîné avec la création d'une fonction `set_img` fonctionnant comme la fonction `afficher_grille` de `hepialight2`.
 
 # Creators
 
