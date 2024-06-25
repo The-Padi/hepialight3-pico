@@ -39,7 +39,7 @@
 
 ### 19 June 2024 ###
 
-- 
+- Working together with **M. Divià**, we finished the functions using the ``UART`` interfaces present in the RBPi Pico we had started the day before. Fixed the issues we encountered while using the functions ``sendline()`` and ``readline()`` adding a small delay/sleep between transmissions as well as some other minor adjustments to make them robust and reliable.
 
 - Working together with **M. Divià**, we set out to try to map part of the ``GPIO`` interfaces of the RBPi Pico in order to "create" two additional ``UART`` interfaces, giving us a total of four so that we would have a total of four to communicate with all adjacent neighbours.  
 We made a first attempt using MicroPython and the libraries made available by it, but the results were more than inadequate. The ``UART`` timings didn't seem to be correct even though they were configured correctly and the messages arrived successfully very rarely. Using the **AnalogDiscovery 2** we determined that the current system did not appear to be fast enough to meet the ``UART`` timings standard.  
