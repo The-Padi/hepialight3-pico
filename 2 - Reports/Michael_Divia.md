@@ -74,6 +74,8 @@ J'ai fini d'optimiser la fonction d'affichage et de scrolling du text. Le texte 
 
 J'ai ensuite enchaîné avec la création d'une fonction `set_img` fonctionnant comme la fonction `afficher_grille` de `hepialight2`.
 
+J'ai terminé ma journée en commençant la rédaction du rapport.
+
 # Creators
 
 **Michael Divià**
