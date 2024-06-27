@@ -81,7 +81,7 @@ J'ai terminé ma journée en rédigeant la majorité du rapport.
 
 Pour commencé, j'ai ajouter des commentaires DocString sur toute les fonctions de notre librairie `HepiaLight3`.
 
-J'ai ensuite enchaîné avec la création de la présentation.
+J'ai ensuite enchaîné avec la création de la présentation avec M. Escribano.
 
 # Creators
 
