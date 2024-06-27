@@ -14,6 +14,11 @@
     - [Lundi, 17 Juin 2024](#lundi-17-juin-2024)
     - [Mardi, 18 Juin 2024](#mardi-18-juin-2024)
     - [Mercredi, 19 Juin 2024](#mercredi-19-juin-2024)
+    - [Jeudi, 20 Juin 2024](#jeudi-20-juin-2024)
+    - [Lundi, 24 Juin 2024](#lundi-24-juin-2024)
+    - [Mardi, 25 Juin 2024](#mardi-25-juin-2024)
+    - [Mercredi, 26 Juin 2024](#mercredi-26-juin-2024)
+    - [Jeudi, 27 Juin 2024](#jeudi-27-juin-2024)
 - [Creators](#creators)
 - [Copyright and license](#copyright-and-license)
 
@@ -52,11 +57,32 @@ Après avoir uploader le bon Firmware sur le Raspberry Pi, comme indiqué [ici](
 
 ## Mercredi, 19 Juin 2024
 
-- Résolution des problèmes d I2C.
+- Résolution des problèmes d'I2C.
 - Récupération et traitement des données d'un capteur de température.
 - Récupération et traitement des données de l'accéléromètre de la MyLab2.
 - Documentation sur le fonctionnement du SPI.
 - Exploration de possibilités pour des implémentations futurs.
+
+## Jeudi, 20 Juin 2024
+
+- Recherches documentaires sur SPI.
+
+## Lundi, 24 Juin 2024
+
+- Recherches documentaire sur les interruptions GPIOs.
+
+## Mardi, 25 Juin 2024
+
+- Aide à Michael pour la structure du rapport pour les parties I2C et SPI.
+
+## Mercredi, 26 Juin 2024
+
+- Recherches sur la structure de code à adopter.
+
+## Jeudi, 27 Juin 2024
+
+- Mise en accord avec les autres groupes sur l'API (peu impactant étant le seul à traiter les questions d'I2C et de SPI).
+- 
 
 # Creators
 
