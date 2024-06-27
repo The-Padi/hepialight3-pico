@@ -75,11 +75,13 @@ J'ai fini d'optimiser la fonction d'affichage et de scrolling du text. Le texte 
 
 J'ai ensuite enchaîné avec la création d'une fonction `set_img` fonctionnant comme la fonction `afficher_grille` de `hepialight2`.
 
-J'ai terminé ma journée en rédigeant la plus grande partie du rapport.
+J'ai terminé ma journée en rédigeant la majorité du rapport.
 
 ## Jeudi 27 Juin 2024
 
-Ajout de DocString sur tout le code.
+Pour commencé, j'ai ajouter des commentaires DocString sur toute les fonctions de notre librairie `HepiaLight3`.
+
+J'ai ensuite enchaîné avec la création de la présentation.
 
 # Creators
 
