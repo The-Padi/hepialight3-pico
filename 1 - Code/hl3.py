@@ -63,75 +63,112 @@ class Direction:
     SOUTH = 2
     EAST = 4
     WEST = 8
-    
-def col(r, g, b):
-    return (r, g, b)
 
-def Color_convert(Color):
-    
+def Color_convert(color):
+    """Convert an input color into a RGB tuple
+
+    Args:
+        color (hex, Color, tuple): Input color to convert
+
+    Raises:
+        ValueError: Input color is not supported
+
+    Returns:
+        tuple: Valid RGB color
+    """
     # Handle hex an 0
-    if isinstance(Color, int):
-        if Color == 0:
-            Color = (0, 0, 0)
+    if isinstance(color, int):
+        if color == 0:
+            color = (0, 0, 0)
         else:
-            Color = ((Color >> 16) & 0xFF, (Color >> 8) & 0xFF, Color & 0xFF)
+            color = ((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF)
     # Handle RGB tuple
-    elif isinstance(Color, tuple) and len(Color) == 3:
+    elif isinstance(color, tuple) and len(color) == 3:
         pass
     # Error
     else:
         raise ValueError("Color must be an RGB tuple, a hex value, 0 or a valide Color from the Color class")
     
-    return Color
+    return color
 
 class Matrix:
     
-    def clear(Color):
-        
+    def clear(color):
+        """Set a single color to the entire LED matrix
+
+        Args:
+            Color (hex, Color, tuple): Color to apply
+        """
         # Convert the Color
-        Color = Color_convert(Color)
+        color = Color_convert(color)
         
         # Set the full screen to the Color
         for i in range(nb_line*nb_row):
-            np[i] = Color
+            np[i] = color
         
         # Apply the array
         np.write()
     
-    def set_line(line, Color):
-        
+    def set_line(line, color):
+        """Set an entire line of LED to a single color
+
+        Args:
+            line (int): The line to set
+            color (hex, Color, tuple): Color to apply
+
+        Raises:
+            ValueError: Input line is out of the LED matrix
+        """
         # Check line
         if line < 0 or line >= nb_line:
             raise ValueError("Line is out of bound")
         
         # Convert the Color
-        Color = Color_convert(Color)
+        color = Color_convert(color)
         
         # Set the line to the Color
         for i in range(line*nb_row, (line*nb_row)+nb_row):
-            np[i] = Color
+            np[i] = color
         
         # Apply the array
         np.write()
     
-    def set_column(column, Color):
-        
+    def set_column(column, color):
+        """Set an entire column of LED to a single color
+
+        Args:
+            column (int): The column to set
+            color (hex, Color, tuple): Color to apply
+
+        Raises:
+            ValueError: Input column is out of the LED matrix
+        """
         # Check column
         if column < 0 or column >= nb_row:
             raise ValueError("Column is out of bound")
         
         # Convert the Color
-        Color = Color_convert(Color)
+        color = Color_convert(color)
         
         # Set the line to the Color
         for i in range(column, nb_row*nb_line, nb_row):
-            np[i] = Color
+            np[i] = color
         
         # Apply the array
         np.write()
     
-    def set_led(column, line, Color):
-        
+    def set_led(column, line, color):
+        """Set a specific LED to a specific color
+
+        Args:
+            column (int): Column of the LED
+            line (int): Line of the LED
+            color (hex, Color, tuple): Color to apply
+
+        Raises:
+            ValueError: Input line is out of the LED matrix
+            ValueError: Input column is out of the LED matrix
+        """
         # Check bounds
         if line < 0 or line >= nb_line:
             raise ValueError("Line is out of bound")
@@ -139,16 +176,28 @@ class Matrix:
             raise ValueError("Column is out of bound")
         
         # Convert the Color
-        Color = Color_convert(Color)
+        color = Color_convert(color)
         
         # Set the specific LED to the Color
-        np[line * nb_row + column] = Color
+        np[line * nb_row + column] = color
         
         # Apply the array
         np.write()
         
     def get_led(column, line):
-        
+        """Get the current color of a specific LED of the matrix
+
+        Args:
+            column (int): Column of the LED
+            line (int): Line of the LED
+
+        Raises:
+            ValueError: Input line is out of the LED matrix
+            ValueError: Input column is out of the LED matrix
+
+        Returns:
+            hex: Value of the color of the LED
+        """
         # Check bounds
         if line < 0 or line >= nb_line:
             raise ValueError("Line is out of bound")
@@ -164,7 +213,16 @@ class Matrix:
         return hex_Color
 
 def set_img(img):
-    
+    """Display a full matrix of colors
+
+    Args:
+        img (str): Multi-line string representing the image to be displayed, where each character corresponds to a color code defined in COLOR_MAP
+
+    Raises:
+        ValueError: The image is empty
+        ValueError: The image is too small for the screen
+        ValueError: The image is too big for the screen
+    """
     if not img:
         raise ValueError("Image cannot be empty")
     
@@ -181,15 +239,40 @@ def set_img(img):
             
 
 def rgb_to_rgb565(r, g, b):
+    """Convert an RGB color to RGB565 format
+
+    Args:
+        r (int): The red component of the color (0-255)
+        g (int): The green component of the color (0-255)
+        b (int): The blue component of the color (0-255)
+
+    Returns:
+        int: The RGB565 representation of the color
+    """
     return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3)
 
+
 def rgb565_to_rgb(color):
+    """Convert an RGB565 color to RGB format
+
+    Args:
+        color (int): The RGB565 color value
+
+    Returns:
+        tuple: A tuple (r, g, b) representing the red, green, and blue components of the color, each in the range 0-255
+    """
     r = (color >> 8) & 0xF8
     g = (color >> 3) & 0xFC
     b = (color << 3) & 0xF8
     return (r, g, b)
 
 def framebuffer_to_neopixel(fb):
+    """Convert a framebuffer to NeoPixel format and send it to the NeoPixel strip
+
+    Args:
+        fb (Framebuffer): The framebuffer object containing pixel data
+
+    """
     for y in range(nb_line):
         for x in range(nb_row):
             color = fb.pixel(x, y)
@@ -197,6 +280,17 @@ def framebuffer_to_neopixel(fb):
     np.write()
 
 def show_text(text, color, speed=0.1):
+    """Display scrolling text on an LED matrix using a framebuffer
+
+    Args:
+        text (str): The text to be displayed
+        color (hex, Color, tuple): The color of the text
+        speed (float, optional): The speed at which the text scrolls. Defaults to 0.1 seconds per frame
+    """
+    
+    # Convert the Color
+    color = Color_convert(color)
+    
     color_rgb565 = rgb_to_rgb565(*color)
     
     for offset in range(nb_row + (len(text) * 8)):
@@ -281,20 +375,37 @@ class Uart:
             sm.put(ord(c))
     
     def send(self, data):
-        
+        """Send data through the appropriate channel based on the direction
+
+        Args:
+            data (str or bytes): The data to be sent
+        """
         if self.direction == Direction.NORTH or self.direction == Direction.SOUTH:
             self.channel.write(data)
         else:
             Uart.pio_uart_print(self.tx, data)
+
     
     def sendline(self, data):
-        
+        """Send data with a newline character through the appropriate channel based on the direction
+
+        Args:
+            data (str): The data to be sent
+        """
         if self.direction == Direction.NORTH or self.direction == Direction.SOUTH:
             self.channel.write(data+'\n')
         else:
             Uart.pio_uart_print(self.tx, data+'\n')
     
     def receive(self, length=1):
+        """Receive data from the appropriate channel based on the direction
+
+        Args:
+            length (int, optional): The number of bytes to read // Defaults to 1
+
+        Returns:
+            str or bytes: The data received
+        """
         data = None
         
         if self.direction == Direction.NORTH or self.direction == Direction.SOUTH:
@@ -310,6 +421,11 @@ class Uart:
         return data
     
     def receiveline(self):
+        """Receive a line of data from the appropriate channel based on the direction
+
+        Returns:
+            str: The line of data received, stripped of any trailing newline characters.
+        """
         data = None
         
         if self.direction == Direction.NORTH or self.direction == Direction.SOUTH:
@@ -325,7 +441,8 @@ class Uart:
         return data.rstrip()
 
 def christmas():
-    
+    """Christmas demo code
+    """
     Color = 0x3
     prime1=439
     prime2=17005013

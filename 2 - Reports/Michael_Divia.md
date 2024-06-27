@@ -14,6 +14,7 @@
   - [Jeudi 20 Juin 2024](#jeudi-20-juin-2024)
   - [Vendredi 21 Juin 2024](#vendredi-21-juin-2024)
   - [Mardi 25 Juin 2024](#mardi-25-juin-2024)
+  - [Jeudi 27 Juin 2024](#jeudi-27-juin-2024)
 - [Creators](#creators)
 - [Copyright and license](#copyright-and-license)
 
@@ -75,6 +76,10 @@ J'ai fini d'optimiser la fonction d'affichage et de scrolling du text. Le texte 
 J'ai ensuite enchaîné avec la création d'une fonction `set_img` fonctionnant comme la fonction `afficher_grille` de `hepialight2`.
 
 J'ai terminé ma journée en commençant la rédaction du rapport.
+
+## Jeudi 27 Juin 2024
+
+Ajout de DocString sur tout le code.
 
 # Creators
 
