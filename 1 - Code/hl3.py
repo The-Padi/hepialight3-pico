@@ -1,4 +1,4 @@
-from machine import Pin, UART
+from machine import Pin, UART, I2C
 from neopixel import NeoPixel
 from rp2 import PIO, StateMachine, asm_pio
 import utime
@@ -11,6 +11,7 @@ gpio_neopixel = 0
 
 np = NeoPixel(Pin(gpio_neopixel, Pin.OUT), nb_line*nb_row)
 fb = framebuf.FrameBuffer(bytearray(nb_line * nb_row * 2), nb_row, nb_line, framebuf.RGB565)
+i2c = I2C(1, scl=Pin(3), sda=Pin(2), freq=400_000)
 
 class Color:
     BLACK = (0, 0, 0)
@@ -63,6 +64,8 @@ class Direction:
     SOUTH = 2
     EAST = 4
     WEST = 8
+    FRONT = 16
+    BACK = 32
 
 def Color_convert(color):
     """Convert an input color into a RGB tuple
@@ -439,6 +442,92 @@ class Uart:
                 data += chr(self.rx.get() >> 24)
             
         return data.rstrip()
+    
+class Accel:
+    
+    def init():
+        i2c.writeto_mem(0x1d, 0x20, b'\x57')
+    
+    def get_x():
+        buf = i2c.readfrom_mem(0x1d, 0xa8, 2)
+        x = ((buf[0] & 0xff) | ((buf[1] & 0xff) << 8)) / 16384
+        if x > 2:
+            x = x - 4
+        return x
+    
+    def get_y():
+        buf = i2c.readfrom_mem(0x1d, 0xaa, 2)
+        y = ((buf[0] & 0xff) | ((buf[1] & 0xff) << 8)) / 16384
+        if y > 2:
+            y = y - 4
+        return y
+        
+    def get_z():
+        buf = i2c.readfrom_mem(0x1d, 0xac, 2)
+        z = ((buf[0] & 0xff) | ((buf[1] & 0xff) << 8)) / 16384
+        if z > 2:
+            z = z - 4
+        return z
+        
+    def facing(side):
+        z = Accel.get_z()
+        if side == Direction.FRONT:
+            if z < 0:
+                return True
+            else:
+                return False
+        elif side == Direction.BACK:
+            if z < 0:
+                return False
+            else:
+                return True
+        else:
+            return False
+    
+    def tilting(dir):
+        if dir == Direction.NORTH or dir == Direction.SOUTH:
+            x = Accel.get_x()
+            if dir == Direction.NORTH:
+                if x > 0.03:
+                    return False
+                elif x < -0.03:
+                    return True
+            else:
+                if x > 0.03:
+                    return True
+                elif x < -0.03:
+                    return False
+        elif dir == Direction.EAST or dir == Direction.WEST:
+            y = Accel.get_y()
+            if dir == Direction.EAST:
+                if y > 0.03:
+                    return False
+                elif y < -0.03:
+                    return True
+            else:
+                if y > 0.03:
+                    return True
+                elif y < -0.03:
+                    return False
+                
+def accel_test():
+    if Accel.tilting(Direction.NORTH):
+        print('Tilting North !')
+    if Accel.tilting(Direction.SOUTH):
+        print('Tilting South !')
+    if Accel.tilting(Direction.WEST):
+        print('Tilting West !')
+    if Accel.tilting(Direction.EAST):
+        print('Tilting East !')
+    if Accel.facing(Direction.FRONT):
+        print('Facing front !')
+    if Accel.facing(Direction.BACK):
+        print('Facing back !')
+        
+    x = Accel.get_x()
+    y = Accel.get_y()
+    z = Accel.get_z()
+    print('Gravity [x, y ,z] = [{}, {}, {}]'.format(x, y, z))
 
 def christmas():
     """Christmas demo code
@@ -517,3 +606,4 @@ def christmas():
             Matrix.set_led(i,Color%8,Color*(i+1)*(j+11))
         utime.sleep(period)
         Matrix.clear(0)
+
