@@ -15,6 +15,7 @@
   - [Vendredi 21 Juin 2024](#vendredi-21-juin-2024)
   - [Mardi 25 Juin 2024](#mardi-25-juin-2024)
   - [Jeudi 27 Juin 2024](#jeudi-27-juin-2024)
+  - [Vendredi 28 Juin 2024](#vendredi-28-juin-2024)
 - [Creators](#creators)
 - [Copyright and license](#copyright-and-license)
 
@@ -82,6 +83,10 @@ J'ai terminé ma journée en rédigeant la majorité du rapport.
 Pour commencé, j'ai ajouter des commentaires DocString sur toute les fonctions de notre librairie `HepiaLight3`.
 
 J'ai ensuite enchaîné avec la création de la présentation avec M. Escribano.
+
+## Vendredi 28 Juin 2024
+
+Finalisation de la présentation et du rapport et rendu du projet.
 
 # Creators
 
