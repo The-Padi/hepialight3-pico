@@ -459,15 +459,15 @@ class Uart:
 class Accel:
     
     def init():
-        """_summary_
+        """Initialize the accelerometer of MyLab2
         """
         i2c.writeto_mem(0x1d, 0x20, b'\x57')
     
     def get_x():
-        """_summary_
+        """Get the x axis value in g
 
         Returns:
-            _type_: _description_
+            float: The x axis value in g
         """
         buf = i2c.readfrom_mem(0x1d, 0xa8, 2)
         x = ((buf[0] & 0xff) | ((buf[1] & 0xff) << 8)) / 16384
@@ -476,10 +476,10 @@ class Accel:
         return x
     
     def get_y():
-        """_summary_
+        """Get the y axis value in g
 
         Returns:
-            _type_: _description_
+            float: The y axis value in g
         """
         buf = i2c.readfrom_mem(0x1d, 0xaa, 2)
         y = ((buf[0] & 0xff) | ((buf[1] & 0xff) << 8)) / 16384
@@ -488,10 +488,10 @@ class Accel:
         return y
         
     def get_z():
-        """_summary_
+        """Get the z axis value in g
 
         Returns:
-            _type_: _description_
+            float: The y axis value in g
         """
         buf = i2c.readfrom_mem(0x1d, 0xac, 2)
         z = ((buf[0] & 0xff) | ((buf[1] & 0xff) << 8)) / 16384
@@ -500,13 +500,13 @@ class Accel:
         return z
         
     def facing(side):
-        """_summary_
+        """Indicate if we are facing the "side" argument of the MyLab2
 
         Args:
-            side (_type_): _description_
+            side (Direction): Either Direction.FRONT or Direction.BACK
 
         Returns:
-            _type_: _description_
+            bool: True or False
         """
         z = Accel.get_z()
         if side == Direction.FRONT:
@@ -523,13 +523,13 @@ class Accel:
             return False
     
     def tilting(dir):
-        """_summary_
+        """Indicate if the MyLab2 card is tilting in the "dir" argument direction
 
         Args:
-            dir (_type_): _description_
+            dir (Direction): Either Direction.NORTH or Direction.SOUTH or Direction.EAST or Direction.WEST
 
         Returns:
-            _type_: _description_
+            bool: True or False
         """
         if dir == Direction.NORTH or dir == Direction.SOUTH:
             x = Accel.get_x()
@@ -562,39 +562,39 @@ class Touch:
     
     @classmethod
     def attach(cls, cb):
-        """_summary_
+        """Attach the callback "cb" to the touchscreen interruption
 
         Args:
-            cb (function): _description_
+            cb (function): Callback. It callback must take the single argument "pos" indicating a Position
         """
         cls.callback = cb
 
     @classmethod   
     def detach(cls):
-        """_summary_
+        """Detach the callback
         """
         cls.callback = None
         
     @classmethod    
     def callback_do(cls, *args, **kwargs):
-        """_summary_
+        """Execute the callback
         """
         if cls.callback:
             cls.callback(*args, **kwargs)
             
     def init():
-        """_summary_
+        """Initialize the touchscreen of MyLab2
         """
         i2c.writeto_mem(0x38, 0xa4, b'\x00')
     
     def read(pos):
-        """_summary_
+        """Indicate if we are touching the "pos" position
 
         Args:
-            pos (_type_): _description_
+            pos (Position): Either Position.SOUTH_EAST or Position.SOUTH_WEST or Position.NORTH_EAST or Position.NORTH_WEST
 
         Returns:
-            _type_: _description_
+            bool: True or False
         """
         buf = i2c.readfrom_mem(0x38, 0x03, 4)
         flag = buf[0] >> 6
@@ -623,14 +623,14 @@ class Touch:
                     return False
                 
     def compute_pos(x, y):
-        """_summary_
+        """Convert x, y screen position to dial position
 
         Args:
-            x (_type_): _description_
-            y (_type_): _description_
+            x (int): x screen position
+            y (int): y screen position
 
         Returns:
-            _type_: _description_
+            Position: Dial position
         """
         if x < 120 and y < 160:
             return Position.SOUTH_EAST
@@ -642,10 +642,10 @@ class Touch:
             return Position.NORTH_WEST  
 
     def read_pos():
-        """_summary_
+        """Read x, y touch on screen position
 
         Returns:
-            _type_: _description_
+            Tuple(int): x, y touch on screen position
         """
         buf = i2c.readfrom_mem(0x38, 0x03, 4)
         x = ((buf[0] & 0x0f) << 8) | (buf[1] & 0xff)
@@ -653,10 +653,10 @@ class Touch:
         return x, y
     
     def touch_cb(pos):
-        """_summary_
+        """Callback displaying corresponding color of dial on LED matrix
 
         Args:
-            pos (_type_): _description_
+            pos (Position): The touch dial position
         """
         if pos == Position.NORTH_WEST:
             Matrix.clear(0)
@@ -680,7 +680,7 @@ class Touch:
                     Matrix.set_led(i + 4, j + 4, Color.BLUE)
             
     def handler():
-        """_summary_
+        """Touchscreen IRQ handler
         """
         x, y = Touch.read_pos()
         pos = Touch.compute_pos(x, y)
@@ -689,25 +689,25 @@ class Touch:
 class Lcd:
     
     def write_cmd(cmd):
-        """_summary_
+        """Write command "cmd" to SPI MOSI
 
         Args:
-            cmd (_type_): _description_
+            cmd (byte): The command byte
         """
         p26.off()
         spi.write(cmd)
         
     def write_data(data):
-        """_summary_
+        """Write data "data" to SPI MOSI
 
         Args:
-            data (_type_): _description_
+            data (byte): The data byte
         """
         p26.on()
         spi.write(data)
         
     def init():
-        """_summary_
+        """Initialize MyLab2 LCD
         """
         Lcd.write_cmd(b'\x01')
         time.sleep_ms(5)
@@ -823,13 +823,13 @@ class Lcd:
         time.sleep_ms(50)
         
     def set_window(x, y, width, height):
-        """_summary_
+        """Define MyLab2 LCD window
 
         Args:
-            x (_type_): _description_
-            y (_type_): _description_
-            width (_type_): _description_
-            height (_type_): _description_
+            x (int): x window screen position
+            y (int): y window screen position
+            width (int): window width
+            height (int): window height
         """
         Lcd.write_cmd(b'\x2a');
         Lcd.write_data(((x >> 8) & 0xff).to_bytes(1, 'big'));
@@ -844,7 +844,7 @@ class Lcd:
         Lcd.write_data(((y + height - 1) & 0xff).to_bytes(1, 'big'));        
         
 def touch_test():
-    """_summary_
+    """Test function for touchscreen. Print touched dial.
     """
     if Touch.read(Position.NORTH_WEST):
         print("Touch north west")
@@ -856,14 +856,14 @@ def touch_test():
         print("Touch south east")
         
 def touch_irq_test():
-    """_summary_
+    """Test function for touchscreen with IRQ. Display correponding color on LED matrix.
     """
     p4.irq(lambda pin: Touch.handler(), Pin.IRQ_FALLING)
     Touch.attach(Touch.touch_cb)
     Touch.init()
     
 def lcd_test():
-    """_summary_
+    """Test function for LCD. Display 4 differents colors dials. 
     """
     p22.on()
     cs(0)
@@ -899,7 +899,7 @@ def lcd_test():
             Lcd.write_data(b'\x1f')
                 
 def accel_test():
-    """_summary_
+    """Test function for accelerometer. Print facing direction, tilting direction and x,y,z values in g.
     """
     if Accel.tilting(Direction.NORTH):
         print('Tilting North !')
