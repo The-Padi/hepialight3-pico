@@ -85,5 +85,3 @@ while True:
     christmas()
     utime.sleep(0.2)
     accel_test()
-
-
