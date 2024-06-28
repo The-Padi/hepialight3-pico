@@ -1,7 +1,8 @@
-from machine import Pin, UART, I2C
+from machine import Pin, UART, I2C, SPI
 from neopixel import NeoPixel
 from rp2 import PIO, StateMachine, asm_pio
 import utime
+import time
 import framebuf
 import gc
 
@@ -12,6 +13,12 @@ gpio_neopixel = 0
 np = NeoPixel(Pin(gpio_neopixel, Pin.OUT), nb_line*nb_row)
 fb = framebuf.FrameBuffer(bytearray(nb_line * nb_row * 2), nb_row, nb_line, framebuf.RGB565)
 i2c = I2C(1, scl=Pin(3), sda=Pin(2), freq=400_000)
+spi = SPI(0, 12_000_000, bits=8, sck=Pin(18), mosi=Pin(19), miso=Pin(16))
+
+p4 = Pin(4, Pin.IN, Pin.PULL_UP)
+p22 = Pin(22, Pin.OUT)
+p26 = Pin(26, Pin.OUT, value=1)
+cs = Pin(17, mode=Pin.OUT, value=1)
 
 class Color:
     BLACK = (0, 0, 0)
@@ -66,6 +73,12 @@ class Direction:
     WEST = 8
     FRONT = 16
     BACK = 32
+    
+class Position:
+    NORTH_WEST = 1
+    NORTH_EAST = 2
+    SOUTH_WEST = 4
+    SOUTH_EAST = 8
 
 def Color_convert(color):
     """Convert an input color into a RGB tuple
@@ -542,6 +555,282 @@ class Accel:
                     return True
                 elif y < -0.03:
                     return False
+                
+class Touch:
+    
+    callback = None
+    
+    @classmethod
+    def attach(cls, cb):
+        cls.callback = cb
+       
+    @classmethod   
+    def detach(cls):
+        cls.callback = None
+        
+    @classmethod    
+    def callback_do(cls, *args, **kwargs):
+        if cls.callback:
+            cls.callback(*args, **kwargs)
+            
+    def init():
+        i2c.writeto_mem(0x38, 0xa4, b'\x00')
+    
+    def read(pos):
+        buf = i2c.readfrom_mem(0x38, 0x03, 4)
+        flag = buf[0] >> 6
+        x = ((buf[0] & 0x0f) << 8) | (buf[1] & 0xff)
+        y = ((buf[2] & 0x0f) << 8) | (buf[3] & 0xff)
+        if flag == 2:
+            if x < 120 and y < 160:
+                if pos == Position.SOUTH_EAST:
+                    return True
+                else:
+                    return False
+            elif x >= 120 and y < 160:
+                if pos == Position.SOUTH_WEST:
+                    return True
+                else:
+                    return False
+            elif x < 120 and y >= 160:
+                if pos == Position.NORTH_EAST:
+                    return True
+                else:
+                    return False
+            elif x >= 120 and y >= 160:
+                if pos == Position.NORTH_WEST:
+                    return True
+                else:
+                    return False
+                
+    def compute_pos(x, y):
+        if x < 120 and y < 160:
+            return Position.SOUTH_EAST
+        elif x >= 120 and y < 160:
+            return Position.SOUTH_WEST
+        elif x < 120 and y >= 160:
+            return Position.NORTH_EAST
+        elif x >= 120 and y >= 160:
+            return Position.NORTH_WEST  
+                   
+    def read_pos():
+        buf = i2c.readfrom_mem(0x38, 0x03, 4)
+        x = ((buf[0] & 0x0f) << 8) | (buf[1] & 0xff)
+        y = ((buf[2] & 0x0f) << 8) | (buf[3] & 0xff)
+        return x, y
+    
+    def touch_cb(pos):
+        if pos == Position.NORTH_WEST:
+            Matrix.clear(0)
+            for i in range(4):
+                for j in range(4):
+                    Matrix.set_led(i, j, Color.WHITE)
+        elif pos == Position.NORTH_EAST:
+            Matrix.clear(0)
+            for i in range(4):
+                for j in range(4):
+                    Matrix.set_led(i + 4, j, Color.RED)
+        elif pos == Position.SOUTH_WEST:
+            Matrix.clear(0)
+            for i in range(4):
+                for j in range(4):
+                    Matrix.set_led(i, j + 4, Color.GREEN)
+        else:
+            Matrix.clear(0)
+            for i in range(4):
+                for j in range(4):
+                    Matrix.set_led(i + 4, j + 4, Color.BLUE)
+            
+    def handler():
+        x, y = Touch.read_pos()
+        pos = Touch.compute_pos(x, y)
+        Touch.callback_do(pos)
+        
+class Lcd:
+    
+    def write_cmd(cmd):
+        p26.off()
+        spi.write(cmd)
+        
+    def write_data(data):
+        p26.on()
+        spi.write(data)
+        
+    def init():
+        Lcd.write_cmd(b'\x01')
+        time.sleep_ms(5)
+
+        Lcd.write_cmd(b'\x11')
+        time.sleep_ms(120)
+
+        Lcd.write_cmd(b'\xCF')
+        Lcd.write_data(b'\x00')
+        Lcd.write_data(b'\x83')
+        Lcd.write_data(b'\x30')
+
+        Lcd.write_cmd(b'\xED')
+        Lcd.write_data(b'\x64')
+        Lcd.write_data(b'\x03')
+        Lcd.write_data(b'\x12')
+        Lcd.write_data(b'\x81')
+
+        Lcd.write_cmd(b'\xE8')
+        Lcd.write_data(b'\x85')
+        Lcd.write_data(b'\x01')
+        Lcd.write_data(b'\x79')
+
+        Lcd.write_cmd(b'\xCB')
+        Lcd.write_data(b'\x39')
+        Lcd.write_data(b'\x2C')
+        Lcd.write_data(b'\x00')
+        Lcd.write_data(b'\x34')
+        Lcd.write_data(b'\x02')
+
+        Lcd.write_cmd(b'\xF7')
+        Lcd.write_data(b'\x20')
+
+        Lcd.write_cmd(b'\xEA')
+        Lcd.write_data(b'\x00')
+        Lcd.write_data(b'\x00')
+
+
+        Lcd.write_cmd(b'\xC1')
+        Lcd.write_data(b'\x11')
+
+        Lcd.write_cmd(b'\xC5')
+        Lcd.write_data(b'\x34')
+        Lcd.write_data(b'\x3D')
+
+        Lcd.write_cmd(b'\xC7')
+        Lcd.write_data(b'\xC0')
+
+        Lcd.write_cmd(b'\x36')
+        Lcd.write_data(b'\x08')
+
+        Lcd.write_cmd(b'\x3A')
+        Lcd.write_data(b'\x55')
+
+        Lcd.write_cmd(b'\xB1')
+        Lcd.write_data(b'\x00')
+        Lcd.write_data(b'\x1D')
+
+        Lcd.write_cmd(b'\xB6')
+        Lcd.write_data(b'\x0A')
+        Lcd.write_data(b'\xA2')
+        Lcd.write_data(b'\x27')
+        Lcd.write_data(b'\x00')
+
+        Lcd.write_cmd(b'\xb7')
+        Lcd.write_data(b'\x07')
+
+
+        Lcd.write_cmd(b'\xF2')
+        Lcd.write_data(b'\x08')
+
+        Lcd.write_cmd(b'\x26')
+        Lcd.write_data(b'\x01')
+
+
+        Lcd.write_cmd(b'\xE0')
+        Lcd.write_data(b'\x1f')
+        Lcd.write_data(b'\x1a')
+        Lcd.write_data(b'\x18')
+        Lcd.write_data(b'\x0a')
+        Lcd.write_data(b'\x0f')
+        Lcd.write_data(b'\x06')
+        Lcd.write_data(b'\x45')
+        Lcd.write_data(b'\x87')
+        Lcd.write_data(b'\x32')
+        Lcd.write_data(b'\x0a')
+        Lcd.write_data(b'\x07')
+        Lcd.write_data(b'\x02')
+        Lcd.write_data(b'\x07')
+        Lcd.write_data(b'\x05')
+        Lcd.write_data(b'\x00')
+
+        Lcd.write_cmd(b'\xE1')
+        Lcd.write_data(b'\x00')
+        Lcd.write_data(b'\x25')
+        Lcd.write_data(b'\x27')
+        Lcd.write_data(b'\x05')
+        Lcd.write_data(b'\x10')
+        Lcd.write_data(b'\x09')
+        Lcd.write_data(b'\x3a')
+        Lcd.write_data(b'\x78')
+        Lcd.write_data(b'\x4d')
+        Lcd.write_data(b'\x05')
+        Lcd.write_data(b'\x18')
+        Lcd.write_data(b'\x0d')
+        Lcd.write_data(b'\x38')
+        Lcd.write_data(b'\x3a')
+        Lcd.write_data(b'\x1f')
+
+        Lcd.write_cmd(b'\x11')
+        time.sleep_ms(120)
+        Lcd.write_cmd(b'\x29')
+        time.sleep_ms(50)
+        
+    def set_window(x, y, width, height):
+        Lcd.write_cmd(b'\x2a');
+        Lcd.write_data(((x >> 8) & 0xff).to_bytes(1, 'big'));
+        Lcd.write_data((x & 0xff).to_bytes(1, 'big'));
+        Lcd.write_data((((x + width - 1) >> 8) & 0xff).to_bytes(1, 'big'));
+        Lcd.write_data(((x + width - 1) & 0xff).to_bytes(1, 'big'));
+
+        Lcd.write_cmd(b'\x2b');
+        Lcd.write_data(((y >> 8) & 0xff).to_bytes(1, 'big'));
+        Lcd.write_data((y & 0xff).to_bytes(1, 'big'));
+        Lcd.write_data((((y + height - 1) >> 8) & 0xff).to_bytes(1, 'big'));
+        Lcd.write_data(((y + height - 1) & 0xff).to_bytes(1, 'big'));        
+        
+def touch_test():
+    if Touch.read(Position.NORTH_WEST):
+        print("Touch north west")
+    elif Touch.read(Position.NORTH_EAST):
+        print("Touch north east")
+    elif Touch.read(Position.SOUTH_WEST):
+        print("Touch south west")
+    elif Touch.read(Position.SOUTH_EAST):
+        print("Touch south east")
+        
+def touch_irq_test():
+    p4.irq(lambda pin: Touch.handler(), Pin.IRQ_FALLING)
+    Touch.attach(Touch.touch_cb)
+    Touch.init()
+    
+def lcd_test():
+    p22.on()
+    cs(0)
+    utime.sleep(1)
+    Lcd.init()
+    
+    Lcd.set_window(0, 0, 120, 160)
+    Lcd.write_cmd(b'\x2c')
+    for i in range(120):
+        for j in range(160):
+            Lcd.write_data(b'\xff')
+            Lcd.write_data(b'\xff')
+            
+    Lcd.set_window(120, 0, 120, 160)
+    Lcd.write_cmd(b'\x2c')
+    for i in range(120):
+        for j in range(160):
+            Lcd.write_data(b'\xf8')
+            Lcd.write_data(b'\x00')
+            
+    Lcd.set_window(0, 160, 120, 160)
+    Lcd.write_cmd(b'\x2c')
+    for i in range(120):
+        for j in range(160):
+            Lcd.write_data(b'\x07')
+            Lcd.write_data(b'\xe0')
+            
+    Lcd.set_window(120, 160, 120, 160)
+    Lcd.write_cmd(b'\x2c')
+    for i in range(120):
+        for j in range(160):
+            Lcd.write_data(b'\x00')
+            Lcd.write_data(b'\x1f')
                 
 def accel_test():
     if Accel.tilting(Direction.NORTH):
