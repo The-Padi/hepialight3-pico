@@ -1,7 +1,5 @@
 from hl3 import *
 
-Accel.init()
-
 while True:
     set_img("""
         .RR..RR.
@@ -83,7 +81,5 @@ while True:
     show_text("This is Text", Color.BLUE, 0.02)
     utime.sleep(0.2)
     christmas()
-    utime.sleep(0.2)
-    accel_test()
 
 

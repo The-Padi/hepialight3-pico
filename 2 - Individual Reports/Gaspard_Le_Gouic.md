@@ -42,7 +42,7 @@ Ce projet consiste à concevoir une adaptation du projet HepiaLight 2 sur une no
 
 Après avoir uploader le bon Firmware sur le Raspberry Pi, comme indiqué [ici](https://www.raspberrypi.com/documentation/microcontrollers/micropython.html), nous pouvons utiliser le logiciel [Thonny](https://thonny.org/) afin d'uploader notre code.
 
-# Travail
+# Journal de bord
 
 ## Lundi, 17 Juin 2024
 
