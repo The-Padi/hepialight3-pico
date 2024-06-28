@@ -77,7 +77,11 @@ After this failed attempt and after having talked to some of the assistants, we 
 
 ### 28 June 2024 ###
 
+- Final changes and additions to the project's report to deliver the final version before the end of the day and so, the end of the project. (In collaboration with **M. Divià** and **M. Le Gouic**)
 
+- Finished project's slideshow before afternoon's presentation. Added splitted conclusion, problem's faced during the development process and other minor changes. (In collaboration with **M. Divià** and **M. Le Gouic**)
+
+- We attended all the presentations of all the other groups and presented our own project together with a short demonstration of how it works. (In collaboration with **M. Divià** and **M. Le Gouic**)
 
 ## References ##
 
