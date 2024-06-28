@@ -81,5 +81,6 @@ while True:
     show_text("This is Text", Color.BLUE, 0.02)
     utime.sleep(0.2)
     christmas()
+    utime.sleep(0.2)
 
 
