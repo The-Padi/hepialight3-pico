@@ -8,9 +8,8 @@
 - [Table des matières](#table-des-mati%C3%A8res)
 - [Instruction & Description](#instruction--description)
 - [Mise en place de la communication](#mise-en-place-de-la-communication)
-    - [Branchements de la carte](#branchements-de-la-carte)
     - [Upload du code](#upload-du-code)
-- [Travail](#travail)
+- [Journal de bord](#journal-de-bord)
     - [Lundi, 17 Juin 2024](#lundi-17-juin-2024)
     - [Mardi, 18 Juin 2024](#mardi-18-juin-2024)
     - [Mercredi, 19 Juin 2024](#mercredi-19-juin-2024)
@@ -19,6 +18,8 @@
     - [Mardi, 25 Juin 2024](#mardi-25-juin-2024)
     - [Mercredi, 26 Juin 2024](#mercredi-26-juin-2024)
     - [Jeudi, 27 Juin 2024](#jeudi-27-juin-2024)
+    - [Vendredi, 28 Juin 2024](#vendredi-28-juin-2024)
+- [Travail réalisé](#travail-r%C3%A9alis%C3%A9)
 - [Creators](#creators)
 - [Copyright and license](#copyright-and-license)
 
@@ -26,17 +27,9 @@
 
 # Instruction & Description
 
-Ce projet consiste à concevoir une adaptation du projet HepiaLight 2 sur une nouvelle architecture afin de prouver son fonctionnement pour HepiaLight 3. Nous utiliserons un Raspberry Pi Pico ainsi qu'une matrice numérique avec des leds RGB adressables.
+Ce projet consiste à concevoir une adaptation du projet HepiaLight 2 sur une nouvelle architecture afin de prouver son fonctionnement pour HepiaLight 3. Nous utiliserons un Raspberry Pi Pico ainsi qu'une matrice numérique avec des leds RGB adressables ainsi qu'une MyLab2 pour les capteurs externes (accéléromètre, touchscreen).
 
 # Mise en place de la communication
-
-## Branchements de la carte
-
-| **RPI Pico** | **NeoPixel NeoMatrix 8x8** |
-| :----------: | :------------------------: |
-|     3V3      |             5V             |
-|     GND      |            GND             |
-|    GPIO 0    |            DIN             |
 
 ## Upload du code
 
@@ -82,7 +75,19 @@ Après avoir uploader le bon Firmware sur le Raspberry Pi, comme indiqué [ici](
 ## Jeudi, 27 Juin 2024
 
 - Mise en accord avec les autres groupes sur l'API (peu impactant étant le seul à traiter les questions d'I2C et de SPI).
-- 
+- Mise en place finale de l’accéléromètre
+- Mise en place finale du touchscreen
+
+## Vendredi, 28 Juin 2024
+
+- Mise en place finale de l'écran LCD
+- Écriture rapport et présentation
+- Préparation de la démonstration
+
+# Travail réalisé
+
+A titre personnel, je me suis donc occupé des capteurs externes touchscreen et accéléromètre (I2C) et de l'affichage LCD (SPI) le tout avec une carte MyLab2. Pour plus de détails, voir les sections associées dans le Main Report.
+
 
 # Creators
 
