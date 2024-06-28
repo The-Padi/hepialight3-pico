@@ -446,9 +446,16 @@ class Uart:
 class Accel:
     
     def init():
+        """_summary_
+        """
         i2c.writeto_mem(0x1d, 0x20, b'\x57')
     
     def get_x():
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
         buf = i2c.readfrom_mem(0x1d, 0xa8, 2)
         x = ((buf[0] & 0xff) | ((buf[1] & 0xff) << 8)) / 16384
         if x > 2:
@@ -456,6 +463,11 @@ class Accel:
         return x
     
     def get_y():
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
         buf = i2c.readfrom_mem(0x1d, 0xaa, 2)
         y = ((buf[0] & 0xff) | ((buf[1] & 0xff) << 8)) / 16384
         if y > 2:
@@ -463,6 +475,11 @@ class Accel:
         return y
         
     def get_z():
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
         buf = i2c.readfrom_mem(0x1d, 0xac, 2)
         z = ((buf[0] & 0xff) | ((buf[1] & 0xff) << 8)) / 16384
         if z > 2:
@@ -470,6 +487,14 @@ class Accel:
         return z
         
     def facing(side):
+        """_summary_
+
+        Args:
+            side (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         z = Accel.get_z()
         if side == Direction.FRONT:
             if z < 0:
@@ -485,6 +510,14 @@ class Accel:
             return False
     
     def tilting(dir):
+        """_summary_
+
+        Args:
+            dir (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         if dir == Direction.NORTH or dir == Direction.SOUTH:
             x = Accel.get_x()
             if dir == Direction.NORTH:
