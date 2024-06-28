@@ -562,21 +562,40 @@ class Touch:
     
     @classmethod
     def attach(cls, cb):
+        """_summary_
+
+        Args:
+            cb (function): _description_
+        """
         cls.callback = cb
-       
+
     @classmethod   
     def detach(cls):
+        """_summary_
+        """
         cls.callback = None
         
     @classmethod    
     def callback_do(cls, *args, **kwargs):
+        """_summary_
+        """
         if cls.callback:
             cls.callback(*args, **kwargs)
             
     def init():
+        """_summary_
+        """
         i2c.writeto_mem(0x38, 0xa4, b'\x00')
     
     def read(pos):
+        """_summary_
+
+        Args:
+            pos (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         buf = i2c.readfrom_mem(0x38, 0x03, 4)
         flag = buf[0] >> 6
         x = ((buf[0] & 0x0f) << 8) | (buf[1] & 0xff)
@@ -604,6 +623,15 @@ class Touch:
                     return False
                 
     def compute_pos(x, y):
+        """_summary_
+
+        Args:
+            x (_type_): _description_
+            y (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         if x < 120 and y < 160:
             return Position.SOUTH_EAST
         elif x >= 120 and y < 160:
@@ -612,14 +640,24 @@ class Touch:
             return Position.NORTH_EAST
         elif x >= 120 and y >= 160:
             return Position.NORTH_WEST  
-                   
+
     def read_pos():
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
         buf = i2c.readfrom_mem(0x38, 0x03, 4)
         x = ((buf[0] & 0x0f) << 8) | (buf[1] & 0xff)
         y = ((buf[2] & 0x0f) << 8) | (buf[3] & 0xff)
         return x, y
     
     def touch_cb(pos):
+        """_summary_
+
+        Args:
+            pos (_type_): _description_
+        """
         if pos == Position.NORTH_WEST:
             Matrix.clear(0)
             for i in range(4):
@@ -642,6 +680,8 @@ class Touch:
                     Matrix.set_led(i + 4, j + 4, Color.BLUE)
             
     def handler():
+        """_summary_
+        """
         x, y = Touch.read_pos()
         pos = Touch.compute_pos(x, y)
         Touch.callback_do(pos)
@@ -649,14 +689,26 @@ class Touch:
 class Lcd:
     
     def write_cmd(cmd):
+        """_summary_
+
+        Args:
+            cmd (_type_): _description_
+        """
         p26.off()
         spi.write(cmd)
         
     def write_data(data):
+        """_summary_
+
+        Args:
+            data (_type_): _description_
+        """
         p26.on()
         spi.write(data)
         
     def init():
+        """_summary_
+        """
         Lcd.write_cmd(b'\x01')
         time.sleep_ms(5)
 
@@ -771,6 +823,14 @@ class Lcd:
         time.sleep_ms(50)
         
     def set_window(x, y, width, height):
+        """_summary_
+
+        Args:
+            x (_type_): _description_
+            y (_type_): _description_
+            width (_type_): _description_
+            height (_type_): _description_
+        """
         Lcd.write_cmd(b'\x2a');
         Lcd.write_data(((x >> 8) & 0xff).to_bytes(1, 'big'));
         Lcd.write_data((x & 0xff).to_bytes(1, 'big'));
@@ -784,6 +844,8 @@ class Lcd:
         Lcd.write_data(((y + height - 1) & 0xff).to_bytes(1, 'big'));        
         
 def touch_test():
+    """_summary_
+    """
     if Touch.read(Position.NORTH_WEST):
         print("Touch north west")
     elif Touch.read(Position.NORTH_EAST):
@@ -794,11 +856,15 @@ def touch_test():
         print("Touch south east")
         
 def touch_irq_test():
+    """_summary_
+    """
     p4.irq(lambda pin: Touch.handler(), Pin.IRQ_FALLING)
     Touch.attach(Touch.touch_cb)
     Touch.init()
     
 def lcd_test():
+    """_summary_
+    """
     p22.on()
     cs(0)
     utime.sleep(1)
@@ -833,6 +899,8 @@ def lcd_test():
             Lcd.write_data(b'\x1f')
                 
 def accel_test():
+    """_summary_
+    """
     if Accel.tilting(Direction.NORTH):
         print('Tilting North !')
     if Accel.tilting(Direction.SOUTH):
